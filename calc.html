@@ -5,17 +5,22 @@
     </head>
     <body>
         <div>
-            <input type="radio" id="8bit" name="mode" value="0xFF" /> 8 bit
-            <input type="radio" id="16bit" name="mode" value="0xFFFF" /> 16 bit
+            <input type="radio" class="input" id="8bitRadio" name="modeRadio" value="0xFF" /> 8 bit
+            <input type="radio" class="input" id="16bitRadio" name="modeRadio" value="0xFFFF" /> 16 bit
         </div>
         <div>
-            <input type="text" id="unsignedDecTextbox"> Unsigned
+            <input type="text" class="input output" id="unsignedDecTextbox"> Unsigned
         </div>
         <div>
-            <input type="text" id="signedDecTextbox"> Signed
+            <input type="text" class="input output" id="signedDecTextbox"> Signed
         </div>
         <div>
-            <input type="text" id="hexInput"> Hex
+            <input type="text" class="input output" id="hexTextbox"> Hex
+        </div>
+
+        <hr>
+        <div>
+            <span class="output" id="valueSpan"></span>
         </div>
         <script src="calc.js"></script>
     </body>
