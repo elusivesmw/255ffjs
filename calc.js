@@ -10,15 +10,59 @@ const hexTextbox = document.getElementById("hexTextbox");
 
 const valueSpan = document.getElementById("valueSpan");
 
+// consts
+const DEC = 10;
+const HEX = 16;
+
 // enum
 const MODE = Object.freeze({
     _8bit: 0xFF,
     _16bit: 0xFFFF
 });
 
-// consts
-const DEC = 10;
-const HEX = 16;
+const LOG_LEVEL = Object.freeze({
+    none: 0,
+    error: 1,
+    warning: 3,
+    info: 7,
+    verbose: 15
+});
+
+class Logger {
+    constructor(level) {
+        this.level = level;
+    }
+
+    announceLevel() {
+        if (this.level) {
+            // TODO: implement 
+        }
+    }
+
+    error(msg) {
+        if ((this.level & LOG_LEVEL.error) == LOG_LEVEL.error) {
+            console.log("%c" + msg, "color: red;");
+        }
+    }
+
+    warning(msg) {
+        if ((this.level & LOG_LEVEL.warning) == LOG_LEVEL.warning) {
+            console.log("%c" + msg, "color: orange;");
+        }
+    }
+
+    info(msg) {
+        if ((this.level & LOG_LEVEL.info) == LOG_LEVEL.info) {
+            console.log("%c" + msg, "color: green;");
+        }
+    }
+
+    debug(msg) {
+        if ((this.level & LOG_LEVEL.verbose) == LOG_LEVEL.verbose) {
+            console.log("%c" + msg, "color: grey;");
+        }
+    }
+}
 
 // value
 class Calc {
@@ -113,11 +157,14 @@ for (const radio of modeRadios) {
     radio.addEventListener("change", modeChanged);
 }
 
-// add value listeners
-unsignedDecTextbox.addEventListener("change", inputChanged);
-signedDecTextbox.addEventListener("change", inputChanged);
-hexTextbox.addEventListener("change", inputChanged);
+// add validation listeners
+unsignedDecTextbox.addEventListener("keydown", validateUnsignedDec);
 
+// add value listeners
+unsignedDecTextbox.addEventListener("input", inputChanged);
+signedDecTextbox.addEventListener("input", inputChanged);
+hexTextbox.addEventListener("input", inputChanged);
+0
 
 
 // events
@@ -149,6 +196,28 @@ function inputChanged(event) {
     updateAll(event.target);
 }
 
+function validateUnsignedDec(event) {
+    const unsignedDecFormat = new RegExp("[0-9]");
+    
+    if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
+
+
+    if (!unsignedDecFormat.test(event.key)) {
+        logger.debug(event.key + " prevented");
+        event.preventDefault();
+    }
+}
+
+function validateFormat(input, format) {
+
+}
+
+var logger = new Logger(LOG_LEVEL.verbose)
+
+logger.error("errors only");
+logger.warning("warnings and errors on");
+logger.info("info, warnings, and errors on");
+logger.debug("verbose on");
 
 // set initial mode
 // later pull from settings
