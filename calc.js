@@ -32,7 +32,7 @@ class Calc {
         this.value &= newMode;
         this.mode = newMode;
 
-        if (callback) callback();
+        if (callback) callback(newMode);
     }
 
     setFromUnsignedDec (newValue, callback) {
@@ -71,11 +71,18 @@ class Calc {
     }
 }
 
-var val = 0;
-var form = {};
-var calc = new Calc();
 
 
+
+// mode callback function
+function updateMode(newMode) {
+    for (const radio of modeRadios) {
+        radio.checked = (radio.value == newMode);
+    }
+}
+
+
+// outputs callback function
 function updateAll(sender) {
     for (output of outputs) {
         // don't update sender to prevent infinite loop
@@ -94,85 +101,36 @@ function updateAll(sender) {
                     output.innerText = calc.value;
                     break; 
             }
-            
         }
     }
 }
 
-// form values
-Object.defineProperty(form, "mode", {
-    get() {
-        for (const radio of modeRadios) {
-            if (radio.checked) {
-                return radio.value;
-            }
-        } 
-    },
-    set(newValue) {
-        for (const radio of modeRadios) {
-            radio.checked = (radio.value == newValue);
-        }
-        calc.setMode(newValue);
-        updateAll();
-    }
-});
-
-Object.defineProperty(form, "unsignedDec", {
-    get() {
-        return unsignedDecTextbox.value;
-    },
-    set(newValue) {
-        calc.setFromUnsignedDec(newValue);
-        updateAll(unsignedDecTextbox);
-    }
-});
 
 
 
-Object.defineProperty(form, "signedDec", {
-    get() {
-        return signedDecTextbox.value;
-    },
-    set(newValue) {
-        signedDecTextbox.value = newValue;
-    }
-});
-
-
-
-
-// Object.defineProperty(form, "value", {
-//     get() {
-//          return hexTextbox.value;
-//     },
-//     set(newValue) {
-//         calc.setFromHex(newValue);
-//         updateAll(hexTextbox);
-//     }
-// });
-
-
-// add listeners
+// add mode listeners
 for (const radio of modeRadios) {
     radio.addEventListener("change", modeChanged);
-    unsignedDecTextbox.addEventListener("change", inputChanged);
-    signedDecTextbox.addEventListener("change", inputChanged);
-    hexTextbox.addEventListener("change", inputChanged);
 }
+
+// add value listeners
+unsignedDecTextbox.addEventListener("change", inputChanged);
+signedDecTextbox.addEventListener("change", inputChanged);
+hexTextbox.addEventListener("change", inputChanged);
+
+
 
 // events
 function modeChanged(event) {
     console.log("mode changed")
 
     let selected = event.target;
-    for (const radio of modeRadios) {
-        radio.checked = (radio.id == selected.id);
-    }
-    calc.setMode(selected.value, updateAll);
+    calc.setMode(selected.value);
+
+    updateMode(selected.value);
+    updateAll(selected);
 }
 
-
-//
 function inputChanged(event) {
     console.log("input changed")
 
@@ -192,24 +150,7 @@ function inputChanged(event) {
 }
 
 
-
-
-// Object.defineProperty(calc, "unsignedDecimal", {
-//     get() {      
-//         return calc._value;
-//     }
-// });
-
-// Object.defineProperty(calc, "hex", {
-//     get() {
-//         return calc._value.toString(16);
-//     }
-// });
-
- 
-// calc.
-
-
 // set initial mode
 // later pull from settings
-form.mode = MODE._8bit;
+var calc = new Calc();
+calc.setMode(MODE._8bit, updateMode);
