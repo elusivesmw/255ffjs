@@ -27,10 +27,10 @@ class Calc {
         this.mode = MODE._8bit;
     }
 
-    setMode (newValue, callback) {
+    setMode (newMode, callback) {
         // truncate extra bits when switching to a lower bit mode
-        this.value &= newValue;
-        this.mode = newValue;
+        this.value &= newMode;
+        this.mode = newMode;
 
         if (callback) callback();
     }
@@ -59,8 +59,9 @@ class Calc {
     }
 
     get signedDec() {
-        if (this.value > (Math.floor(this.mode / 2))) {
-            return this.value - (this.mode + 1);
+        if (this.value > Math.floor(this.mode / 2)) {
+            let max = parseInt(this.mode) + 1;
+            return this.value - max;
         }
         return this.value;
     }
