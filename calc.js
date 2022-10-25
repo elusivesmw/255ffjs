@@ -8,6 +8,9 @@ const signedDecTextbox = document.getElementById("signedDecTextbox");
 const unsignedDecTextbox = document.getElementById("unsignedDecTextbox");
 const hexTextbox = document.getElementById("hexTextbox");
 
+const incButton = document.getElementById("incButton");
+const decButton = document.getElementById("decButton");
+
 const valueSpan = document.getElementById("valueSpan");
 
 // consts
@@ -71,7 +74,7 @@ class Calc {
         this.mode = MODE._8bit;
     }
 
-    setMode (newMode, callback) {
+    setMode(newMode, callback) {
         // truncate extra bits when switching to a lower bit mode
         this.value &= newMode;
         this.mode = newMode;
@@ -79,27 +82,43 @@ class Calc {
         if (callback) callback(newMode);
     }
 
-    setFromUnsignedDec (newValue, callback) {
-        this.value = this.mode & newValue;
+    setFromUnsignedDec(newValue, callback) {
+        this.value = parseInt(this.mode & newValue);
         
         if (callback) callback();
     }
 
-    setFromSignedDec (newValue, callback) {
-        this.value = this.mode & newValue;
+    setFromSignedDec(newValue, callback) {
+        this.value = parseInt(this.mode & newValue);
 
         if (callback) callback();
     }
 
-    setFromHex (newValue, callback) {
-        this.value = parseInt(newValue, HEX);
+    setFromHex(newValue, callback) {
+        this.value = parseInt(this.mode & newValue, HEX);
+
+        if (callback) callback();
+    }
+
+    inc(callback) {
+        this.value++;
+        if (this.value > this.mode) this.value = 0; 
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    dec(callback) {
+        this.value--;
+        if (this.value < 0) this.value = parseInt(this.mode); 
+        logger.debug(this.value);
 
         if (callback) callback();
     }
 
     
     get unsignedDec() {
-        return this.value;
+        return parseInt(this.value);
     }
 
     get signedDec() {
@@ -164,8 +183,10 @@ unsignedDecTextbox.addEventListener("keydown", validateUnsignedDec);
 unsignedDecTextbox.addEventListener("input", inputChanged);
 signedDecTextbox.addEventListener("input", inputChanged);
 hexTextbox.addEventListener("input", inputChanged);
-0
 
+// add button listeners
+incButton.addEventListener("click", incClicked)
+decButton.addEventListener("click", decClicked)
 
 // events
 function modeChanged(event) {
@@ -195,6 +216,15 @@ function inputChanged(event) {
 
     updateAll(event.target);
 }
+
+function incClicked() {
+    calc.inc(updateAll);
+}
+
+function decClicked() {
+    calc.dec(updateAll);
+}
+
 
 function validateUnsignedDec(event) {
     const unsignedDecFormat = new RegExp("[0-9]");
