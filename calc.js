@@ -16,6 +16,11 @@ const incButton = document.getElementById("incButton");
 const decButton = document.getElementById("decButton");
 const onesComplementButton = document.getElementById("onesComplementButton");
 const twosComplementButton = document.getElementById("twosComplementButton");
+const bslButton = document.getElementById("bslButton");
+const bsrButton = document.getElementById("bsrButton");
+const rolButton = document.getElementById("rolButton");
+const rorButton = document.getElementById("rorButton");
+const xbaButton = document.getElementById("xbaButton");
 
 const valueSpan = document.getElementById("valueSpan");
 
@@ -158,13 +163,63 @@ class Calc {
         if (callback) callback();
     }
 
-    twosComplementButton(callback) {
+    twosComplement(callback) {
         this.onesComplement();
         this.inc();
 
         if (callback) callback();
-    } 
+    }
 
+    bsl(callback) {
+        this.value = this.value << 1;
+        if (this.value >= this.mode) {
+            this.value -= parseInt(this.mode) + 1;
+        }
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    bsr(callback) {
+        this.value = this.value >> 1;
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    rol(callback) {
+        this.value = this.value << 1;
+        if (this.value > this.mode) {
+            this.value -= this.mode;
+        }
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    ror(callback) {
+        let carry = this.value & 1;
+        this.value = this.value >> 1;
+        if (carry == 1) {
+            this.value  += Math.floor(this.mode / 2) + 1;
+        }
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    xba(callback) {
+        if (this.mode != MODE._16bit) {
+            logger.warning("invalid mode for xba");
+            return;
+        }
+        let high = (0xFF00 & this.value) >> 8;
+        let low = (0x00FF & this.value) << 8;
+        this.value = high | low;
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
     
     get unsignedDec() {
         return parseInt(this.value);
@@ -289,6 +344,11 @@ incButton.addEventListener("click", incClicked);
 decButton.addEventListener("click", decClicked);
 onesComplementButton.addEventListener("click", onesComplementClicked);
 twosComplementButton.addEventListener("click", twosComplementClicked);
+bslButton.addEventListener("click", bslButtonClicked);
+bsrButton.addEventListener("click", bsrButtonClicked);
+rolButton.addEventListener("click", rolButtonClicked);
+rorButton.addEventListener("click", rorButtonClicked);
+xbaButton.addEventListener("click", xbaButtonClicked);
 
 // leave
 unsignedDecTextbox.addEventListener("blur", inputLeft);
@@ -296,6 +356,11 @@ signedDecTextbox.addEventListener("blur", inputLeft);
 hexTextbox.addEventListener("blur", inputLeft);
 binaryTextbox.addEventListener("blur", inputLeft);
 
+// right click
+unsignedDecTextbox.addEventListener("contextmenu", inputRightClicked);
+signedDecTextbox.addEventListener("contextmenu", inputRightClicked);
+hexTextbox.addEventListener("contextmenu", inputRightClicked);
+binaryTextbox.addEventListener("contextmenu", inputRightClicked);
 
 // events
 function modeChanged(event) {
@@ -344,6 +409,15 @@ function inputLeft(event) {
     }
 }
 
+function inputRightClicked(event) {
+    logger.info("right clicked");
+
+    event.preventDefault();
+    let copyValue = event.target.value;
+    navigator.clipboard.writeText(copyValue);
+    logger.debug(copyValue);
+}
+
 function incClicked() {
     calc.inc(updateAll);
 }
@@ -359,7 +433,32 @@ function onesComplementClicked() {
 
 function twosComplementClicked() {
     logger.info("two's complement");
-    calc.twosComplementButton(updateAll);
+    calc.twosComplement(updateAll);
+}
+
+function bslButtonClicked() {
+    logger.info("bsl clicked");
+    calc.bsl(updateAll);
+}
+
+function bsrButtonClicked() {
+    logger.info("bsr clicked");
+    calc.bsr(updateAll);
+}
+
+function rolButtonClicked() {
+    logger.info("rol clicked");
+    calc.rol(updateAll);
+}
+
+function rorButtonClicked() {
+    logger.info("ror clicked");
+    calc.ror(updateAll);
+}
+
+function xbaButtonClicked() {
+    logger.info("xba clicked");
+    calc.xba(updateAll);
 }
 
 function validateUnsignedDec(event) {
