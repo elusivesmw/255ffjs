@@ -4,6 +4,10 @@ html {
     /* change to rem later */
 }
 
+body {
+    margin: 0;
+}
+
 input {
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
@@ -15,13 +19,20 @@ input[type=text] {
     width: 100%;
 }
 
-div.mode {
-    /* change to flex and merge with border of inputs */
-    display: inline-block;
+.modes {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+
+    margin: 10px 10px -25px 25px;
     padding: 4px 8px;
+
     border: 1px solid black;
     border-radius: 8px;
+
+    background-color: white;
 }
+
 
 .main-grid {
     display: flex;
@@ -29,9 +40,12 @@ div.mode {
     gap: 10px;
 
     margin: 10px;
-    padding: 10px;
+    padding: 30px 10px 10px 10px;
+    
     border: 1px solid black;
     border-radius: 10px;
+
+    background-color: white;
 }
 
 .inputs-grid {
@@ -44,13 +58,11 @@ div.mode {
 
 .col-label {
     grid-column: 1;
-    background-color: #eee;
     width: 1fr;
 }
 
 .col-input {
     grid-column: 2;
-    background-color: #ddd;
     width: 3fr;
 }
 
