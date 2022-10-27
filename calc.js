@@ -8,9 +8,14 @@ const unsignedDecTextbox = document.getElementById("unsignedDecTextbox");
 const signedDecTextbox = document.getElementById("signedDecTextbox");
 const hexTextbox = document.getElementById("hexTextbox");
 const binaryTextbox = document.getElementById("binaryTextbox");
+const bitsCheckboxes = document.getElementsByName("bitsCheckbox");
+
+const bits16Checkboxes = document.querySelectorAll(".bits16 > input[type='checkbox'][name='bitsCheckbox']");
 
 const incButton = document.getElementById("incButton");
 const decButton = document.getElementById("decButton");
+const onesComplementButton = document.getElementById("onesComplementButton");
+const twosComplementButton = document.getElementById("twosComplementButton");
 
 const valueSpan = document.getElementById("valueSpan");
 
@@ -115,6 +120,20 @@ class Calc {
         if (callback) callback();
     }
 
+    setFlags(flag, value, callback) {
+        if (value) {
+            // set flag
+            this.value |= flag;
+        } else {
+            // clear flag
+            this.value &= ~flag;
+        }
+        this.value = this.mode & this.value;
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
     inc(callback) {
         this.value++;
         if (this.value > this.mode) this.value = 0; 
@@ -130,6 +149,21 @@ class Calc {
 
         if (callback) callback();
     }
+
+    onesComplement(callback) {
+        let mask = parseInt(~this.value & this.mode);
+        this.value = mask;
+        logger.debug(this.value);
+
+        if (callback) callback();
+    }
+
+    twosComplementButton(callback) {
+        this.onesComplement();
+        this.inc();
+
+        if (callback) callback();
+    } 
 
     
     get unsignedDec() {
@@ -170,8 +204,23 @@ function updateMode(newMode) {
     for (const radio of modeRadios) {
         radio.checked = (radio.value == newMode);
     }
+
+    switch(parseInt(newMode)) {
+        case 0xFF:
+            disableInputs(bits16Checkboxes, true);
+            break;
+        case 0xFFFF:
+            disableInputs(bits16Checkboxes, false);
+            break;
+    }
 }
 
+// disable inputs
+function disableInputs(inputs, disabled) {
+    for (const input of inputs) {
+        input.disabled = disabled;
+    }
+}
 
 // outputs callback function
 function updateAll(sender) {
@@ -185,6 +234,7 @@ function updateAll(sender) {
 
 // update specific control
 function updateControl(sender) {
+    // by id (textboxes)
     switch (sender.id) {
         case unsignedDecTextbox.id:
             output.value = calc.unsignedDec;
@@ -200,7 +250,14 @@ function updateControl(sender) {
             break;
         case valueSpan.id:
             sender.innerText = calc.value;
-            break; 
+            break;
+    }
+
+    // by name (checkboxes)
+    switch (sender.name) {
+        case "bitsCheckbox":
+            sender.checked = ((calc.value & sender.value) == sender.value);
+            break;
     }
 }
 
@@ -222,9 +279,16 @@ signedDecTextbox.addEventListener("input", inputChanged);
 hexTextbox.addEventListener("input", inputChanged);
 binaryTextbox.addEventListener("input", inputChanged);
 
+// add bits listeners
+for (const check of bitsCheckboxes) {
+    check.addEventListener("change", bitChanged);
+}
+
 // add button listeners
-incButton.addEventListener("click", incClicked)
-decButton.addEventListener("click", decClicked)
+incButton.addEventListener("click", incClicked);
+decButton.addEventListener("click", decClicked);
+onesComplementButton.addEventListener("click", onesComplementClicked);
+twosComplementButton.addEventListener("click", twosComplementClicked);
 
 // leave
 unsignedDecTextbox.addEventListener("blur", inputLeft);
@@ -265,6 +329,12 @@ function inputChanged(event) {
     updateAll(event.target);
 }
 
+function bitChanged(event) {
+    logger.info("bit changed");
+
+    calc.setFlags(event.target.value, event.target.checked, updateAll);
+}
+
 function inputLeft(event) {
     logger.info("input left");
 
@@ -280,6 +350,16 @@ function incClicked() {
 
 function decClicked() {
     calc.dec(updateAll);
+}
+
+function onesComplementClicked() {
+    logger.info("one's complement");
+    calc.onesComplement(updateAll);
+}
+
+function twosComplementClicked() {
+    logger.info("two's complement");
+    calc.twosComplementButton(updateAll);
 }
 
 function validateUnsignedDec(event) {
