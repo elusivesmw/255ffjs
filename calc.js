@@ -10,7 +10,7 @@ const hexTextbox = document.getElementById("hexTextbox");
 const binaryTextbox = document.getElementById("binaryTextbox");
 const bitsCheckboxes = document.getElementsByName("bitsCheckbox");
 
-const bits16Checkboxes = document.querySelectorAll(".bits16 > input[type='checkbox'][name='bitsCheckbox']");
+const bits16Checkboxes = document.querySelectorAll(".bits16 input[type='checkbox'][name='bitsCheckbox']");
 
 const incButton = document.getElementById("incButton");
 const decButton = document.getElementById("decButton");

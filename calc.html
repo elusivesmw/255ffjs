@@ -4,55 +4,135 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
     <body>
-        <div>
-            <input type="radio" class="input" id="8bitRadio" name="modeRadio" value="0xFF" /> 8 bit
-            <input type="radio" class="input" id="16bitRadio" name="modeRadio" value="0xFFFF" /> 16 bit
-        </div>
-        <div>
-            <input type="text" class="input output" id="unsignedDecTextbox"> Unsigned
-        </div>
-        <div>
-            <input type="text" class="input output" id="signedDecTextbox"> Signed
-        </div>
-        <div>
-            <input type="text" class="input output" id="hexTextbox"> Hex
-        </div>
-        <div>
-            <input type="text" class="input output" id="binaryTextbox"> Binary
-        </div>
-        <div class="bits16">
-            <input type="checkbox" class="input output" id="bit15Checkbox" name="bitsCheckbox" value="0x8000"> 15
-            <input type="checkbox" class="input output" id="bit14Checkbox" name="bitsCheckbox" value="0x4000"> 14
-            <input type="checkbox" class="input output" id="bit13Checkbox" name="bitsCheckbox" value="0x2000"> 13
-            <input type="checkbox" class="input output" id="bit12Checkbox" name="bitsCheckbox" value="0x1000"> 12
-            <input type="checkbox" class="input output" id="bit11Checkbox" name="bitsCheckbox" value="0x0800"> 11
-            <input type="checkbox" class="input output" id="bit10Checkbox" name="bitsCheckbox" value="0x0400"> 10
-            <input type="checkbox" class="input output" id="bit9Checkbox" name="bitsCheckbox" value="0x0200"> 9
-            <input type="checkbox" class="input output" id="bit8Checkbox" name="bitsCheckbox" value="0x0100"> 8
-        </div>
-        <div class="bits8">
-            <input type="checkbox" class="input output" id="bit7Checkbox" name="bitsCheckbox" value="0x80"> 7
-            <input type="checkbox" class="input output" id="bit6Checkbox" name="bitsCheckbox" value="0x40"> 6
-            <input type="checkbox" class="input output" id="bit5Checkbox" name="bitsCheckbox" value="0x20"> 5
-            <input type="checkbox" class="input output" id="bit4Checkbox" name="bitsCheckbox" value="0x10"> 4
-            <input type="checkbox" class="input output" id="bit3Checkbox" name="bitsCheckbox" value="0x08"> 3
-            <input type="checkbox" class="input output" id="bit2Checkbox" name="bitsCheckbox" value="0x04"> 2
-            <input type="checkbox" class="input output" id="bit1Checkbox" name="bitsCheckbox" value="0x02"> 1
-            <input type="checkbox" class="input output" id="bit0Checkbox" name="bitsCheckbox" value="0x01"> 0
+        <div class="mode">
+            <input type="radio" class="input" id="8bitRadio" name="modeRadio" value="0xFF" />
+            <label for="8bitRadio">8 bit</label>
+
+            <input type="radio" class="input" id="16bitRadio" name="modeRadio" value="0xFFFF" />
+            <label for="16bitRadio">16 bit</label>
         </div>
 
-        <div>
-            <button class="" id="incButton">Inc</button>
+        <div class="main-grid">
+            <div class="inputs-grid">
+                <div class="col-label">
+                    <label for="unsignedDecTextbox">Unsigned</label>
+                </div>
+                <div class="col-input">
+                    <input type="text" class="input output" id="unsignedDecTextbox" />
+                </div>
+
+                <div class="col-label">
+                    <label for="signedDecTextbox">Signed</label>
+                </div>
+                <div class="col-input">
+                    <input type="text" class="input output" id="signedDecTextbox">
+                </div>
+
+                <div class="col-label">
+                    <label for="hexTextbox">Hex</label>
+                </div>
+                <div class="col-input">
+                    <input type="text" class="input output" id="hexTextbox">
+                </div>
+                
+                <div class="col-label">
+                    <label for="binaryTextbox">Binary</label>
+                </div>
+                <div class="col-input">
+                    <input type="text" class="input output" id="binaryTextbox">
+                </div>
+                
+                <div class="col-label">
+                    <label  for="binaryTextbox">Bits</label>
+                </div>
+                <div class="col-input">
+                    <div class="bits bits16">
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit15Checkbox" name="bitsCheckbox" value="0x8000">
+                            <label for="bit15Checkbox">15</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit14Checkbox" name="bitsCheckbox" value="0x4000">
+                            <label for="bit15Checkbox">14</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit13Checkbox" name="bitsCheckbox" value="0x2000">
+                            <label for="bit15Checkbox">13</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit12Checkbox" name="bitsCheckbox" value="0x1000">
+                            <label for="bit15Checkbox">12</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit11Checkbox" name="bitsCheckbox" value="0x0800">
+                            <label for="bit15Checkbox">11</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit10Checkbox" name="bitsCheckbox" value="0x0400">
+                            <label for="bit15Checkbox">10</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit9Checkbox" name="bitsCheckbox" value="0x0200">
+                            <label for="bit15Checkbox">9</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit8Checkbox" name="bitsCheckbox" value="0x0100">
+                            <label for="bit15Checkbox">8</label>
+                        </div>
+                    </div>
+                    <div class="bits bits8">
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit7Checkbox" name="bitsCheckbox" value="0x80">
+                            <label for="bit15Checkbox">7</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit6Checkbox" name="bitsCheckbox" value="0x40">
+                            <label for="bit15Checkbox">6</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit5Checkbox" name="bitsCheckbox" value="0x20">
+                            <label for="bit15Checkbox">5</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit4Checkbox" name="bitsCheckbox" value="0x10">
+                            <label for="bit15Checkbox">4</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit3Checkbox" name="bitsCheckbox" value="0x08">
+                            <label for="bit15Checkbox">3</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit2Checkbox" name="bitsCheckbox" value="0x04">
+                            <label for="bit15Checkbox">2</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit1Checkbox" name="bitsCheckbox" value="0x02">
+                            <label for="bit15Checkbox">1</label>
+                        </div>
+                        <div class="bit">
+                            <input type="checkbox" class="input output" id="bit0Checkbox" name="bitsCheckbox" value="0x01">
+                            <label for="bit15Checkbox">0</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons-grid">
+                <div class="operator">
+                    <button class="" id="incButton">INC</button>
+                </div>
+                <div class="operator">
+                    <button class="" id="decButton">DEC</button>
+                </div>
+                <div class="operator">
+                    <button class="" id="onesComplementButton">1's</button>
+                </div>
+                <div class="operator">
+                    <button class="" id="twosComplementButton">2's</button>
+                </div>
+            </div>
         </div>
-        <div>
-            <button class="" id="decButton">Dec</button>
-        </div>
-        <div>
-            <button class="" id="onesComplementButton">One's Complement</button>
-        </div>
-        <div>
-            <button class="" id="twosComplementButton">Two's Complement</button>
-        </div>
+
+
 
         <hr>
         <div>
