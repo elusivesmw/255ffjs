@@ -14,12 +14,12 @@ const bits16Checkboxes = document.querySelectorAll(".bits16 input[type='checkbox
 
 const incButton = document.getElementById("incButton");
 const decButton = document.getElementById("decButton");
-const onesComplementButton = document.getElementById("onesComplementButton");
-const twosComplementButton = document.getElementById("twosComplementButton");
 const bslButton = document.getElementById("bslButton");
 const bsrButton = document.getElementById("bsrButton");
 const rolButton = document.getElementById("rolButton");
 const rorButton = document.getElementById("rorButton");
+const onesCompButton = document.getElementById("onesCompButton");
+const twosCompButton = document.getElementById("twosCompButton");
 const xbaButton = document.getElementById("xbaButton");
 
 const valueSpan = document.getElementById("valueSpan");
@@ -262,9 +262,11 @@ function updateMode(newMode) {
 
     switch(parseInt(newMode)) {
         case 0xFF:
+            xbaButton.disabled = true;
             disableInputs(bits16Checkboxes, true);
             break;
         case 0xFFFF:
+            xbaButton.disabled = false;
             disableInputs(bits16Checkboxes, false);
             break;
     }
@@ -342,12 +344,12 @@ for (const check of bitsCheckboxes) {
 // add button listeners
 incButton.addEventListener("click", incClicked);
 decButton.addEventListener("click", decClicked);
-onesComplementButton.addEventListener("click", onesComplementClicked);
-twosComplementButton.addEventListener("click", twosComplementClicked);
 bslButton.addEventListener("click", bslButtonClicked);
 bsrButton.addEventListener("click", bsrButtonClicked);
 rolButton.addEventListener("click", rolButtonClicked);
 rorButton.addEventListener("click", rorButtonClicked);
+onesCompButton.addEventListener("click", onesCompClicked);
+twosCompButton.addEventListener("click", twosCompClicked);
 xbaButton.addEventListener("click", xbaButtonClicked);
 
 // leave
@@ -426,16 +428,6 @@ function decClicked() {
     calc.dec(updateAll);
 }
 
-function onesComplementClicked() {
-    logger.info("one's complement");
-    calc.onesComplement(updateAll);
-}
-
-function twosComplementClicked() {
-    logger.info("two's complement");
-    calc.twosComplement(updateAll);
-}
-
 function bslButtonClicked() {
     logger.info("bsl clicked");
     calc.bsl(updateAll);
@@ -454,6 +446,16 @@ function rolButtonClicked() {
 function rorButtonClicked() {
     logger.info("ror clicked");
     calc.ror(updateAll);
+}
+
+function onesCompClicked() {
+    logger.info("one's complement");
+    calc.onesComplement(updateAll);
+}
+
+function twosCompClicked() {
+    logger.info("two's complement");
+    calc.twosComplement(updateAll);
 }
 
 function xbaButtonClicked() {
