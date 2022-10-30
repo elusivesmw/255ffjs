@@ -79,12 +79,10 @@ button:active {
 
 .col-label {
     grid-column: 1;
-    width: 1fr;
 }
 
 .col-input {
     grid-column: 2;
-    width: 3fr;
 }
 
 .bits {
@@ -116,6 +114,49 @@ button:active {
 
 .operator {
 
+}
+
+#custom-view-select select{
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+
+    margin: 10px 10px -25px 25px;
+    padding: 4px 8px;
+
+    font-size: 16px;
+
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+#custom-view {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin: 10px;
+    padding: 30px 10px 10px 10px;
+    
+    border: 1px solid black;
+    border-radius: 8px;
+
+    background-color: white;
+}
+
+#custom-view.inactive {
+    padding: 0;
+    border-bottom: 0;
+}
+
+.col-custom-label {
+    grid-column: 2;
+}
+
+.col-custom-input {
+    grid-column: 1;
 }
 
 button {

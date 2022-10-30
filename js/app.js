@@ -1,4 +1,3 @@
-
 // dom elements
 const inputs = document.getElementsByClassName("input");
 const outputs = document.getElementsByClassName("output");
@@ -22,236 +21,10 @@ const onesCompButton = document.getElementById("onesCompButton");
 const twosCompButton = document.getElementById("twosCompButton");
 const xbaButton = document.getElementById("xbaButton");
 
+const customViewSelect = document.getElementById("custom-view-select");
+const customView = document.getElementById("custom-view");
+
 const valueSpan = document.getElementById("valueSpan");
-
-// consts
-const BIN = 2;
-const DEC = 10;
-const HEX = 16;
-
-// enum
-const MODE = Object.freeze({
-    _8bit: 0xFF,
-    _16bit: 0xFFFF
-});
-
-const LOG_LEVEL = Object.freeze({
-    none: 0,
-    error: 1,
-    warning: 3,
-    info: 7,
-    debug: 15,
-    trace: 31
-});
-
-class Logger {
-    constructor(level) {
-        this.level = level;
-    }
-
-    announceLevel() {
-        if (this.level) {
-            // TODO: implement 
-        }
-    }
-
-    error(msg) {
-        if ((this.level & LOG_LEVEL.error) == LOG_LEVEL.error) {
-            console.log("%c" + msg, "color: red;");
-        }
-    }
-
-    warning(msg) {
-        if ((this.level & LOG_LEVEL.warning) == LOG_LEVEL.warning) {
-            console.log("%c" + msg, "color: orange;");
-        }
-    }
-
-    info(msg) {
-        if ((this.level & LOG_LEVEL.info) == LOG_LEVEL.info) {
-            console.log("%c" + msg, "color: green;");
-        }
-    }
-
-    debug(msg) {
-        if ((this.level & LOG_LEVEL.debug) == LOG_LEVEL.debug) {
-            console.log("%c" + msg, "color: grey;");
-        }
-    }
-
-    trace(msg) {
-        if ((this.level & LOG_LEVEL.trace) == LOG_LEVEL.trace) {
-            console.log("%c" + msg, "color: white;");
-        }
-    }
-}
-
-// value
-class Calc {
-    constructor() {
-        this.value = 0;
-        this.mode = MODE._8bit;
-    }
-
-    setMode(newMode, callback) {
-        // truncate extra bits when switching to a lower bit mode
-        this.value &= newMode;
-        this.mode = newMode;
-
-        if (callback) callback(newMode);
-    }
-
-    setFromUnsignedDec(newValue, callback) {
-        this.value = parseInt(this.mode & newValue);
-        
-        if (callback) callback();
-    }
-
-    setFromSignedDec(newValue, callback) {
-        this.value = parseInt(this.mode & newValue);
-
-        if (callback) callback();
-    }
-
-    setFromHex(newValue, callback) {
-        this.value = this.mode & parseInt(newValue, HEX);
-
-        if (callback) callback();
-    }
-
-    setFromBinary(newValue, callback) {
-        this.value = parseInt(this.mode) & parseInt(newValue, BIN);
-
-        if (callback) callback();
-    }
-
-    setFlags(flag, value, callback) {
-        if (value) {
-            // set flag
-            this.value |= flag;
-        } else {
-            // clear flag
-            this.value &= ~flag;
-        }
-        this.value = this.mode & this.value;
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    inc(callback) {
-        this.value++;
-        if (this.value > this.mode) this.value = 0; 
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    dec(callback) {
-        this.value--;
-        if (this.value < 0) this.value = parseInt(this.mode); 
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    onesComplement(callback) {
-        let mask = parseInt(~this.value & this.mode);
-        this.value = mask;
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    twosComplement(callback) {
-        this.onesComplement();
-        this.inc();
-
-        if (callback) callback();
-    }
-
-    bsl(callback) {
-        this.value = this.value << 1;
-        if (this.value >= this.mode) {
-            this.value -= parseInt(this.mode) + 1;
-        }
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    bsr(callback) {
-        this.value = this.value >> 1;
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    rol(callback) {
-        this.value = this.value << 1;
-        if (this.value > this.mode) {
-            this.value -= this.mode;
-        }
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    ror(callback) {
-        let carry = this.value & 1;
-        this.value = this.value >> 1;
-        if (carry == 1) {
-            this.value  += Math.floor(this.mode / 2) + 1;
-        }
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-
-    xba(callback) {
-        if (this.mode != MODE._16bit) {
-            logger.warning("invalid mode for xba");
-            return;
-        }
-        let high = (0xFF00 & this.value) >> 8;
-        let low = (0x00FF & this.value) << 8;
-        this.value = high | low;
-        logger.debug(this.value);
-
-        if (callback) callback();
-    }
-    
-    get unsignedDec() {
-        return parseInt(this.value);
-    }
-
-    get signedDec() {
-        if (this.value > Math.floor(this.mode / 2)) {
-            let max = parseInt(this.mode) + 1;
-            return this.value - max;
-        }
-        return this.value;
-    }
-    
-    get hex() {
-        let modeMaxHex = parseInt(this.mode).toString(HEX);
-        return this.zeroPad(this.value.toString(HEX), modeMaxHex.length);
-    }
-
-    get binary () {
-        let modeMaxBinary = parseInt(this.mode).toString(BIN);
-        return this.zeroPad(this.value.toString(BIN), modeMaxBinary.length);
-    }
-
-    zeroPad(value, length) {
-        while (value.length < length) {
-            value = "0" + value;
-        }
-        return value;
-    }
-}
-
-
 
 
 // mode callback function
@@ -289,6 +62,18 @@ function updateAll(sender) {
     }
 }
 
+function updateCustom(sender) {
+    // need to regrab these each time
+    let customOutputs = document.querySelectorAll("#custom-view .output");
+    for (output of customOutputs) {
+        // don't update sender to prevent infinite loop
+        if (output != sender) {
+            updateControl(output);
+        }
+    }
+}
+
+
 // update specific control
 function updateControl(sender) {
     // by id (textboxes)
@@ -316,8 +101,22 @@ function updateControl(sender) {
             sender.checked = ((calc.value & sender.value) == sender.value);
             break;
     }
-}
 
+    // custom textboxes
+    if (sender.type === "text" && sender.id.startsWith("custom-input")) {
+        logger.trace("change custom text");
+        let pos = sender.dataset.pos;
+        let size = sender.dataset.size;
+        sender.value = calc.getCustomFlags(pos, size);
+    }
+
+    // custom checkboxes
+    if (sender.type === "checkbox" && sender.id.startsWith("custom-input")) {
+        logger.trace("change custom checkbox");
+        let pos = sender.dataset.pos;
+        sender.checked = calc.getCustomFlags(pos, 1);
+    }
+}
 
 // add mode listeners
 for (const radio of modeRadios) {
@@ -399,7 +198,7 @@ function inputChanged(event) {
 function bitChanged(event) {
     logger.info("bit changed");
 
-    calc.setFlags(event.target.value, event.target.checked, updateAll);
+    calc.setFlags(event.target.checked, event.target.value, updateAll);
 }
 
 function inputLeft(event) {
@@ -496,6 +295,148 @@ function validateFormat(event, format) {
     // }
 }
 
+function buildCustomViewSelect() {
+    logger.info("build custom view select");
+
+    let select = document.createElement("select");
+    select.className = "";
+    let option =  document.createElement("option");
+    option.value = -1;
+    option.innerText = "None";
+    select.appendChild(option);
+    
+    for (let i = 0; i < customViews.length; ++i) {
+        let view = customViews[i];
+        if (view.enabled) {
+            option = document.createElement("option");
+            option.value = i;
+            option.innerText = view.name;
+    
+            select.appendChild(option);
+        }
+    }
+
+    select.addEventListener("change", (event) => {
+        logger.info("select option changed");
+
+         // clear previous views
+        customView.innerHTML = "";
+        let val = event.target.value;
+        
+        if (val >= 0) {
+            customView.classList.remove("inactive");
+            buildCustomView(val);
+        } else {
+            customView.classList.add("inactive");
+        }
+    });
+
+    customViewSelect.appendChild(select);
+}
+
+function buildCustomView(i) {
+    logger.info("build custom view");
+
+    
+    let name = customViews[i].name;
+    let format = customViews[i].format;
+    let enabled = customViews[i].enabled;
+    let controls = customViews[i].controls;
+
+    if (enabled) {
+        for (let j = 0; j < controls.length; ++j) {
+            let control = controls[j];
+            // give id to custom view inputs
+            let id = "custom-input-" + j;
+    
+            logger.trace(control.toString())
+            let inputDiv = buildInput(id, control);
+            let labelDiv = buildLabel(id, control);
+            
+            customView.appendChild(inputDiv);
+            customView.appendChild(labelDiv);
+        }
+    } 
+
+    updateCustom();
+}
+
+function buildInput(id, control) {
+    let inputDiv = document.createElement("div");
+    inputDiv.className = "col-custom-input";
+
+    switch (control.type.toLowerCase()) {
+        case "textbox":
+            var input = buildTextbox(id, control.pos, control.size);
+            break;
+        case "checkbox":
+            var input = buildCheckbox(id, control.pos);
+            break;
+        default:
+            logger.error("invalid custom control type");
+    }
+
+    inputDiv.appendChild(input);
+
+    return inputDiv;
+}
+
+function buildTextbox(id, pos, size) {
+    let textbox = document.createElement("input");
+    textbox.type = "text";
+    textbox.className = "input output";
+    textbox.id = id;
+    textbox.dataset.pos = pos;
+    textbox.dataset.size = size;
+
+    textbox.addEventListener("input", (event) => {
+        logger.info("custom textbox input changed");
+        // TODO: set max if out of range
+        let val = event.target.value;
+        let pos = event.target.dataset.pos;
+        let size = event.target.dataset.size;
+
+        calc.setCustomFlags(val, pos, size, updateAll);
+
+        // TODO: remove event listener when custom view changes
+    });
+
+    return textbox;
+}
+
+function buildCheckbox(id, pos) {
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "input output";
+    checkbox.id = id;
+    checkbox.dataset.pos = pos;
+
+    checkbox.addEventListener("change", (event) => {
+        logger.info("custom checkbox input changed");
+        let val = event.target.checked;
+        calc.setCustomFlags(val, pos, 1, updateAll);
+
+        // TODO: remove event listener when custom view changes
+    });
+
+    return checkbox;
+}
+
+function buildLabel(id, control) {
+    let labelDiv = document.createElement("div");
+    labelDiv.className = "col-custom-label";
+    
+    let label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerText = control.label;
+
+    labelDiv.appendChild(label);
+
+    return labelDiv;
+}
+
+
+// init logger
 var logger = new Logger(LOG_LEVEL.trace);
 
 logger.error("errors only");
@@ -503,6 +444,8 @@ logger.warning("warnings and errors on");
 logger.info("info, warnings, and errors on");
 logger.debug("debug on");
 logger.trace("trace on");
+
+buildCustomViewSelect();
 
 // set initial mode
 // later pull from settings
