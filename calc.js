@@ -22,6 +22,7 @@ const onesCompButton = document.getElementById("onesCompButton");
 const twosCompButton = document.getElementById("twosCompButton");
 const xbaButton = document.getElementById("xbaButton");
 
+const customViewSelect = document.getElementById("custom-view-select");
 const customView = document.getElementById("custom-view");
 
 const valueSpan = document.getElementById("valueSpan");
@@ -331,6 +332,18 @@ function updateAll(sender) {
     }
 }
 
+function updateCustom(sender) {
+    // need to regrab these each time
+    let customOutputs = document.querySelectorAll("#custom-view .output");
+    for (output of customOutputs) {
+        // don't update sender to prevent infinite loop
+        if (output != sender) {
+            updateControl(output);
+        }
+    }
+}
+
+
 // update specific control
 function updateControl(sender) {
     // by id (textboxes)
@@ -374,7 +387,6 @@ function updateControl(sender) {
         sender.checked = calc.getCustomFlags(pos, 1);
     }
 }
-
 
 // add mode listeners
 for (const radio of modeRadios) {
@@ -553,32 +565,70 @@ function validateFormat(event, format) {
     // }
 }
 
+function buildCustomViewSelect() {
+    logger.info("build custom view select");
+
+    let select = document.createElement("select");
+    select.className = "";
+    let option =  document.createElement("option");
+    option.value = -1;
+    option.innerText = "None";
+    select.appendChild(option);
+    
+    for (let i = 0; i < customViews.length; ++i) {
+        let view = customViews[i];
+        if (view.enabled) {
+            option = document.createElement("option");
+            option.value = i;
+            option.innerText = view.name;
+    
+            select.appendChild(option);
+        }
+    }
+
+    select.addEventListener("change", (event) => {
+        logger.info("select option changed");
+
+         // clear previous views
+        customView.innerHTML = "";
+        let val = event.target.value;
+        
+        if (val >= 0) {
+            customView.classList.remove("inactive");
+            buildCustomView(val);
+        } else {
+            customView.classList.add("inactive");
+        }
+    });
+
+    customViewSelect.appendChild(select);
+}
+
 function buildCustomView(i) {
     logger.info("build custom view");
 
-    // clear previous views
-    customView.innerHTML = "";
-
-
-    // for loop start
-    // give id to custom view inputs
+    
     let name = customViews[i].name;
     let format = customViews[i].format;
     let enabled = customViews[i].enabled;
     let controls = customViews[i].controls;
 
-    for (let j = 0; j < controls.length; ++j) {
-        let control = controls[j];
-        let id = "custom-input-" + j;
+    if (enabled) {
+        for (let j = 0; j < controls.length; ++j) {
+            let control = controls[j];
+            // give id to custom view inputs
+            let id = "custom-input-" + j;
+    
+            logger.trace(control.toString())
+            let inputDiv = buildInput(id, control);
+            let labelDiv = buildLabel(id, control);
+            
+            customView.appendChild(inputDiv);
+            customView.appendChild(labelDiv);
+        }
+    } 
 
-        logger.trace(control.toString())
-        let inputDiv = buildInput(id, control);
-        let labelDiv = buildLabel(id, control);
-        
-        customView.appendChild(inputDiv);
-        customView.appendChild(labelDiv);
-    }
-
+    updateCustom();
 }
 
 function buildInput(id, control) {
@@ -1286,7 +1336,7 @@ logger.info("info, warnings, and errors on");
 logger.debug("debug on");
 logger.trace("trace on");
 
-buildCustomView(0);
+buildCustomViewSelect();
 
 // set initial mode
 // later pull from settings
