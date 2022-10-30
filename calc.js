@@ -22,6 +22,8 @@ const onesCompButton = document.getElementById("onesCompButton");
 const twosCompButton = document.getElementById("twosCompButton");
 const xbaButton = document.getElementById("xbaButton");
 
+const customView = document.getElementById("custom-view");
+
 const valueSpan = document.getElementById("valueSpan");
 
 // consts
@@ -496,6 +498,130 @@ function validateFormat(event, format) {
     // }
 }
 
+function buildCustomView(i) {
+    logger.info("build custom view");
+
+    // clear previous views
+    customView.innerHTML = "";
+
+
+    // for loop start
+    // give id to custom view inputs
+    let name = customViews[i].name;
+    let format = customViews[i].format;
+    let enabled = customViews[i].enabled;
+    let controls = customViews[i].controls;
+
+    for (let j = 0; j < controls.length; ++j) {
+        let control = controls[j];
+        let id = "custom-input-" + j;
+
+        logger.trace(control.toString())
+        let inputDiv = buildInput(j, control);
+        let labelDiv = buildLabel(j, control);
+        
+        customView.appendChild(inputDiv);
+        customView.appendChild(labelDiv);
+    }
+
+}
+
+function buildInput(id, control) {
+    let inputDiv = document.createElement("div");
+    inputDiv.className = "col-custom-input";
+
+    switch (control.type.toLowerCase()) {
+        case "textbox":
+            var input = buildTextbox(id, control.pos, control.size);
+            break;
+        case "checkbox":
+            var input = buildCheckbox(id, control.pos);
+            break;
+        default:
+            logger.error("invalid custom control type");
+    }
+
+    inputDiv.appendChild(input);
+
+    return inputDiv;
+}
+
+function buildTextbox(id, pos, size) {
+    let textbox = document.createElement("input");
+    textbox.type = "text";
+    textbox.class = "input output";
+    textbox.id = id;
+
+    return textbox;
+}
+
+function buildCheckbox(id, pos) {
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.class = "input output";
+    checkbox.id = id;
+
+    return checkbox;
+}
+
+function buildLabel(id, control) {
+    let labelDiv = document.createElement("div");
+    labelDiv.className = "col-custom-label";
+    
+    let label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerText = control.label;
+
+    labelDiv.appendChild(label);
+
+    return labelDiv;
+}
+
+
+// custom views
+var customViews = [
+	// sprite
+	{
+		"name": "OAM Tile properties",
+		"format": "YXPPCCCT",
+		"enabled": true,
+		"controls":
+		[
+			{
+				"label": "Y flip",
+				"type": "CheckBox",
+				"pos": 7
+			},
+			{
+				"label": "X flip",
+				"type": "CheckBox",
+				"pos": 6
+			},
+			{
+				"label": "Priority",
+				"type": "TextBox",
+				"pos": 4,
+				"size": 2
+			},
+			{
+				"label": "Palette",
+				"type": "TextBox",
+				"pos": 1,
+				"size": 3
+			},
+			{
+				"label": "Page",
+				"type": "TextBox",
+				"pos": 0,
+				"size": 1
+			}
+		]
+	}
+]
+
+
+
+// init logger
 var logger = new Logger(LOG_LEVEL.trace);
 
 logger.error("errors only");
@@ -509,3 +635,6 @@ logger.trace("trace on");
 var calc = new Calc();
 updateAll();
 calc.setMode(MODE._8bit, updateMode);
+
+
+buildCustomView(0);

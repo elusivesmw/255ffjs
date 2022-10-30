@@ -118,6 +118,31 @@ button:active {
 
 }
 
+#custom-view {
+    display: grid;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin: 10px;
+    padding: 30px 10px 10px 10px;
+    
+    border: 1px solid black;
+    border-radius: 8px;
+
+    background-color: white;
+}
+
+.col-custom-label {
+    grid-column: 2;
+    width: 3fr;
+}
+
+.col-custom-input {
+    grid-column: 1;
+    width: 1fr;
+}
+
 button {
     width: 50px;
 }
