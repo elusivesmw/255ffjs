@@ -127,7 +127,7 @@ class Calc {
         if (callback) callback();
     }
 
-    setFlags(flag, value, callback) {
+    setFlags(value, flag, callback) {
         if (value) {
             // set flag
             this.value |= flag;
@@ -139,6 +139,36 @@ class Calc {
         logger.debug(this.value);
 
         if (callback) callback();
+    }
+
+    setCustomFlags(value, pos, size, callback) {
+        // get mask
+        let max = Math.pow(2, size) - 1;
+        let mask = max << pos;
+
+        // set weight
+        let shifted = value << pos;
+        shifted &= this.mode;
+
+        // clear flag(s)
+        this.value &= ~mask;
+        // set flag(s)
+        this.value |= shifted;
+
+        if (callback) callback();
+    }
+
+    getCustomFlags(pos, size) {
+        // get mask
+        let max = Math.pow(2, size) - 1;
+        let mask = max << pos;
+
+        // set weight
+        let val = this.value & mask;
+        let shifted = val >> pos;
+        shifted &= this.mode;
+
+        return shifted;
     }
 
     inc(callback) {
@@ -318,6 +348,21 @@ function updateControl(sender) {
             sender.checked = ((calc.value & sender.value) == sender.value);
             break;
     }
+
+    // custom textboxes
+    if (sender.type === "text" && sender.id.startsWith("custom-input")) {
+        logger.trace("change custom text");
+        let pos = sender.dataset.pos;
+        let size = sender.dataset.size;
+        sender.value = calc.getCustomFlags(pos, size);
+    }
+
+    // custom checkboxes
+    if (sender.type === "checkbox" && sender.id.startsWith("custom-input")) {
+        logger.trace("change custom checkbox");
+        let pos = sender.dataset.pos;
+        sender.checked = calc.getCustomFlags(pos, 1);
+    }
 }
 
 
@@ -401,7 +446,7 @@ function inputChanged(event) {
 function bitChanged(event) {
     logger.info("bit changed");
 
-    calc.setFlags(event.target.value, event.target.checked, updateAll);
+    calc.setFlags(event.target.checked, event.target.value, updateAll);
 }
 
 function inputLeft(event) {
@@ -517,8 +562,8 @@ function buildCustomView(i) {
         let id = "custom-input-" + j;
 
         logger.trace(control.toString())
-        let inputDiv = buildInput(j, control);
-        let labelDiv = buildLabel(j, control);
+        let inputDiv = buildInput(id, control);
+        let labelDiv = buildLabel(id, control);
         
         customView.appendChild(inputDiv);
         customView.appendChild(labelDiv);
@@ -549,8 +594,22 @@ function buildInput(id, control) {
 function buildTextbox(id, pos, size) {
     let textbox = document.createElement("input");
     textbox.type = "text";
-    textbox.class = "input output";
+    textbox.className = "input output";
     textbox.id = id;
+    textbox.dataset.pos = pos;
+    textbox.dataset.size = size;
+
+    textbox.addEventListener("input", (event) => {
+        logger.info("custom textbox input changed");
+        // TODO: set max if out of range
+        let val = event.target.value;
+        let pos = event.target.dataset.pos;
+        let size = event.target.dataset.size;
+
+        calc.setCustomFlags(val, pos, size, updateAll);
+
+        // TODO: remove event listener when custom view changes
+    });
 
     return textbox;
 }
@@ -558,8 +617,17 @@ function buildTextbox(id, pos, size) {
 function buildCheckbox(id, pos) {
     let checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.class = "input output";
+    checkbox.className = "input output";
     checkbox.id = id;
+    checkbox.dataset.pos = pos;
+
+    checkbox.addEventListener("change", (event) => {
+        logger.info("custom checkbox input changed");
+        let val = event.target.checked;
+        calc.setCustomFlags(val, pos, 1, updateAll);
+
+        // TODO: remove event listener when custom view changes
+    });
 
     return checkbox;
 }
@@ -579,37 +647,31 @@ function buildLabel(id, control) {
 
 
 // custom views
-var customViews = [
-	// sprite
-	{
+var customViews = [{
+	    // sprite
 		"name": "OAM Tile properties",
 		"format": "YXPPCCCT",
 		"enabled": true,
-		"controls":
-		[
+		"controls":[
 			{
 				"label": "Y flip",
 				"type": "CheckBox",
 				"pos": 7
-			},
-			{
+			},{
 				"label": "X flip",
 				"type": "CheckBox",
 				"pos": 6
-			},
-			{
+			},{
 				"label": "Priority",
 				"type": "TextBox",
 				"pos": 4,
 				"size": 2
-			},
-			{
+			},{
 				"label": "Palette",
 				"type": "TextBox",
 				"pos": 1,
 				"size": 3
-			},
-			{
+			},{
 				"label": "Page",
 				"type": "TextBox",
 				"pos": 0,
@@ -630,11 +692,10 @@ logger.info("info, warnings, and errors on");
 logger.debug("debug on");
 logger.trace("trace on");
 
+buildCustomView(0);
+
 // set initial mode
 // later pull from settings
 var calc = new Calc();
 updateAll();
 calc.setMode(MODE._8bit, updateMode);
-
-
-buildCustomView(0);

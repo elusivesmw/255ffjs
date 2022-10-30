@@ -79,12 +79,10 @@ button:active {
 
 .col-label {
     grid-column: 1;
-    width: 1fr;
 }
 
 .col-input {
     grid-column: 2;
-    width: 3fr;
 }
 
 .bits {
@@ -120,6 +118,7 @@ button:active {
 
 #custom-view {
     display: grid;
+    grid-template-columns: 1fr 3fr;
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 10px;
@@ -135,12 +134,10 @@ button:active {
 
 .col-custom-label {
     grid-column: 2;
-    width: 3fr;
 }
 
 .col-custom-input {
     grid-column: 1;
-    width: 1fr;
 }
 
 button {
