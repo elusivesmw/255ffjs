@@ -113,9 +113,15 @@ button:active {
 
 .operators-grid {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+@media screen and (min-width: 605px) {
+    .operators-grid {
+        max-width: 110px;;
+    }
 }
 
 .operator {
@@ -145,7 +151,7 @@ button:active {
     display: grid;
     grid-template-columns: 1fr 3fr;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
 
     margin: 10px;
