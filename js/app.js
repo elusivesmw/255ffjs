@@ -24,6 +24,8 @@ const xbaButton = document.getElementById("xbaButton");
 const customViewSelect = document.getElementById("custom-view-select");
 const customView = document.getElementById("custom-view");
 
+const popoutButton = document.getElementById("pop-out");
+
 const valueSpan = document.getElementById("valueSpan");
 
 
@@ -162,6 +164,9 @@ unsignedDecTextbox.addEventListener("contextmenu", inputRightClicked);
 signedDecTextbox.addEventListener("contextmenu", inputRightClicked);
 hexTextbox.addEventListener("contextmenu", inputRightClicked);
 binaryTextbox.addEventListener("contextmenu", inputRightClicked);
+
+// popout
+popoutButton.addEventListener("click", popOut);
 
 // events
 function modeChanged(event) {
@@ -433,6 +438,11 @@ function buildLabel(id, control) {
     labelDiv.appendChild(label);
 
     return labelDiv;
+}
+
+function popOut() {
+    logger.info("popout");
+    window.open("index.html", "_blank", "popup=true,width=600,height=800");
 }
 
 
