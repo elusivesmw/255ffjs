@@ -45,13 +45,13 @@ class Calc {
     }
 
     setFromHex(newValue, callback) {
-        this.value = this.mode & parseInt(newValue, HEX);
+        this.value = this.mode & parseInt(newValue, BASE.hex);
 
         if (callback) callback();
     }
 
     setFromBinary(newValue, callback) {
-        this.value = parseInt(this.mode) & parseInt(newValue, BIN);
+        this.value = parseInt(this.mode) & parseInt(newValue, BASE.binary);
 
         if (callback) callback();
     }
