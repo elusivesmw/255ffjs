@@ -181,6 +181,7 @@ function modeChanged(event) {
 
 function inputChanged(event) {
     logger.info("input changed");
+    logger.trace(event.target.value);
 
     switch (event.target.id) {
         case unsignedDecTextbox.id:
@@ -268,36 +269,65 @@ function xbaButtonClicked() {
 }
 
 function validateUnsignedDec(event) {
-    const unsignedDecChars = new RegExp("[0-9]");
-    validateFormat(event, unsignedDecChars);
+    const unsignedDecChars = new RegExp("[0-9]+");
+    validateFormat(event, unsignedDecChars, BASE.decimal);
 }
 
 function validateSignedDec(event) {
-    const signedDecChars = new RegExp("[\-0-9]");
-    validateFormat(event, signedDecChars);
+    const signedDecChars = new RegExp("^-?[0-9]*");
+    validateFormat(event, signedDecChars, BASE.decimal);
 }
 
 function validateHex(event) {
-    logger.error("not yet implemented");
+    const hexChars = new RegExp("[0-9a-fA-F]+");
+    validateFormat(event, hexChars, BASE.hex);
 }
 
 function validateBinary(event) {
-    const binaryChars = new RegExp("[01]");
-    validateFormat(event, binaryChars);
+    const binaryChars = new RegExp("[01]+");
+    validateFormat(event, binaryChars, BASE.binary);
 }
 
-function validateFormat(event, format) {
+function validateFormat(event, format, base) {
     if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
 
+    // invalid character
     if (!format.test(event.key)) {
-        logger.debug(event.key + " prevented");
+        logger.debug(event.key + " key prevented");
         event.preventDefault();
+        return;
     }
 
-    // TODO: figure out this validation
-    // if (format.test(event.target.value)) {
-    //     logger.trace("whole format mismatch");
-    // }
+    // mimick what the value will be if we let the keypress through
+    if (event.target.selectionStart === event.target.selectionEnd) {
+        var newValue = event.target.value.insert(event.target.selectionStart, event.key);
+    } else {
+        var newValue = event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+    }
+    logger.trace(newValue);
+
+    // invalid format
+    if (!format.test(newValue)) {
+        logger.debug(event.key + " format prevented");
+        event.preventDefault();
+        return;
+    }
+
+    // too many digits
+    let maxLength = calc.modeMaxLength(base);
+    if (newValue.length > maxLength) {
+        logger.debug(newValue + " too many digits");
+        event.preventDefault();
+        return;
+    }
+
+    // value too high, set to max
+    if (parseInt(newValue, base) > parseInt(calc.mode)) {
+        logger.debug(newValue + " value too high");
+        event.preventDefault();
+        calc.setMaxValue(updateAll);
+        return;
+    }
 }
 
 function buildCustomViewSelect() {

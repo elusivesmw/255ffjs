@@ -32,6 +32,12 @@ class Calc {
         if (callback) callback(newMode);
     }
 
+    setMaxValue(callback) {
+        this.value = parseInt(this.mode);
+
+        if (callback) callback();
+    }
+
     setFromUnsignedDec(newValue, callback) {
         this.value = parseInt(this.mode & newValue);
         
@@ -219,5 +225,9 @@ class Calc {
             value = "0" + value;
         }
         return value;
+    }
+
+    modeMaxLength(base) {
+        return parseInt(this.mode).toString(base).length;
     }
 }
