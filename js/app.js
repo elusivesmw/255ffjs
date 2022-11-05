@@ -276,7 +276,7 @@ function validateUnsignedDec(event) {
 
 function validateSignedDec(event) {
     const chars = /[\-\d]/;
-    const format = /^-$|^-[1-9]+$|^[\d]+$/;
+    const format = /^-$|^-[1-9]+[\d]*$|^[\d]+$/;
     validateFormat(event, chars, format, BASE.decimal);
 }
 
