@@ -269,36 +269,41 @@ function xbaButtonClicked() {
 }
 
 function validateUnsignedDec(event) {
-    const unsignedDecChars = new RegExp("[0-9]+");
-    validateFormat(event, unsignedDecChars, BASE.decimal);
+    const chars = /\d/;
+    const format = /\d+/;
+    validateFormat(event, chars, format, BASE.decimal);
 }
 
 function validateSignedDec(event) {
-    const signedDecChars = new RegExp("^-?[0-9]*");
-    validateFormat(event, signedDecChars, BASE.decimal);
+    const chars = /[\-\d]/;
+    const format = /^-$|^-[1-9]+$|^[\d]+$/;
+    validateFormat(event, chars, format, BASE.decimal);
 }
 
 function validateHex(event) {
-    const hexChars = new RegExp("[0-9a-fA-F]+");
-    validateFormat(event, hexChars, BASE.hex);
+    const chars = /[\da-fA-F]/;
+    const format = /[\da-fA-F]+/;
+    validateFormat(event, chars, format, BASE.hex);
 }
 
 function validateBinary(event) {
-    const binaryChars = new RegExp("[01]+");
-    validateFormat(event, binaryChars, BASE.binary);
+    chars = /[01]/;
+    const chars = /[01]+/;
+    validateFormat(event, chars, format, BASE.binary);
 }
 
-function validateFormat(event, format, base) {
+function validateFormat(event, chars, format, base) {
     if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
 
     // invalid character
-    if (!format.test(event.key)) {
+    if (!chars.test(event.key)) {
         logger.debug(event.key + " key prevented");
         event.preventDefault();
         return;
     }
 
     // mimick what the value will be if we let the keypress through
+    // TODO: figure out how to handle insert mode
     if (event.target.selectionStart === event.target.selectionEnd) {
         var newValue = event.target.value.insert(event.target.selectionStart, event.key);
     } else {
@@ -315,11 +320,25 @@ function validateFormat(event, format, base) {
 
     // too many digits
     let maxLength = calc.modeMaxLength(base);
+    if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
         logger.debug(newValue + " too many digits");
         event.preventDefault();
         return;
     }
+
+    // is negative
+    if (newValue.substring(0, 1) == "-" && newValue.length > 1) {
+        let minSignedValue = calc.minSignedValue();
+        if (newValue < minSignedValue) {
+            logger.debug(newValue + " negative number too low");
+            event.preventDefault();
+            calc.setFromSignedDec(minSignedValue, updateAll);
+            return;
+        }
+        
+    }
+    // TODO: handle positive's over 127
 
     // value too high, set to max
     if (parseInt(newValue, base) > parseInt(calc.mode)) {

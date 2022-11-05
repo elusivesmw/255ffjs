@@ -230,4 +230,9 @@ class Calc {
     modeMaxLength(base) {
         return parseInt(this.mode).toString(base).length;
     }
+
+    minSignedValue() {
+        let max = parseInt(this.mode) + 1;
+        return (max/2) - max;
+    }
 }
