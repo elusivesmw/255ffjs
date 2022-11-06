@@ -269,34 +269,26 @@ function xbaButtonClicked() {
 }
 
 function validateUnsignedDec(event) {
-    const chars = /\d/;
-    const format = /\d+/;
-    validateFormat(event, chars, format, BASE.decimal);
+    validateFormat(event, NUM.unsigned);
 }
 
 function validateSignedDec(event) {
-    const chars = /[\-\d]/;
-    const format = /^-$|^-[1-9]+[\d]*$|^[\d]+$/;
-    validateFormat(event, chars, format, BASE.decimal);
+    validateFormat(event, NUM.signed);
 }
 
 function validateHex(event) {
-    const chars = /[\da-fA-F]/;
-    const format = /[\da-fA-F]+/;
-    validateFormat(event, chars, format, BASE.hex);
+    validateFormat(event, NUM.hex);
 }
 
 function validateBinary(event) {
-    chars = /[01]/;
-    const chars = /[01]+/;
-    validateFormat(event, chars, format, BASE.binary);
+    validateFormat(event, NUM.binary);
 }
 
-function validateFormat(event, chars, format, base) {
+function validateFormat(event, num) {
     if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
 
     // invalid character
-    if (!chars.test(event.key)) {
+    if (!num.chars.test(event.key)) {
         logger.debug(event.key + " key prevented");
         event.preventDefault();
         return;
@@ -312,14 +304,14 @@ function validateFormat(event, chars, format, base) {
     logger.trace(newValue);
 
     // invalid format
-    if (!format.test(newValue)) {
+    if (!num.format.test(newValue)) {
         logger.debug(event.key + " format prevented");
         event.preventDefault();
         return;
     }
 
     // too many digits
-    let maxLength = calc.modeMaxLength(base);
+    let maxLength = calc.modeMaxLength(num.base);
     if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
         logger.debug(newValue + " too many digits");
@@ -327,21 +319,31 @@ function validateFormat(event, chars, format, base) {
         return;
     }
 
-    // is negative
-    if (newValue.substring(0, 1) == "-" && newValue.length > 1) {
-        let minSignedValue = calc.minSignedValue();
-        if (newValue < minSignedValue) {
-            logger.debug(newValue + " negative number too low");
-            event.preventDefault();
-            calc.setFromSignedDec(minSignedValue, updateAll);
-            return;
+    // is signed
+    if (num == NUM.signed) {
+        if (newValue.length > 1 && newValue.substring(0, 1) == "-") {
+            // is negative, handle min value
+            let signedMin = calc.signedMin();
+            if (newValue < signedMin) {
+                logger.debug(newValue + " negative signed number too low");
+                event.preventDefault();
+                calc.setFromSignedDec(signedMin, updateAll);
+                return;
+            }
+        } else {
+            // is positive, handle lower max value
+            let signedMax = calc.signedMax();
+            if (newValue > signedMax) {
+                logger.debug(newValue + " positive signed number too high");
+                event.preventDefault();
+                calc.setFromSignedDec(signedMax, updateAll);
+                return;
+            }
         }
-        
     }
-    // TODO: handle positive's over 127
-
+    
     // value too high, set to max
-    if (parseInt(newValue, base) > parseInt(calc.mode)) {
+    if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
         logger.debug(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
