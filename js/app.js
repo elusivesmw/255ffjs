@@ -106,7 +106,7 @@ function updateControl(sender) {
 
     // custom textboxes
     if (sender.type === "text" && sender.id.startsWith("custom-input")) {
-        logger.trace("change custom text");
+        log.debug("change custom text");
         let pos = sender.dataset.pos;
         let size = sender.dataset.size;
         sender.value = calc.getCustomFlags(pos, size);
@@ -114,7 +114,7 @@ function updateControl(sender) {
 
     // custom checkboxes
     if (sender.type === "checkbox" && sender.id.startsWith("custom-input")) {
-        logger.trace("change custom checkbox");
+        log.debug("change custom checkbox");
         let pos = sender.dataset.pos;
         sender.checked = calc.getCustomFlags(pos, 1);
     }
@@ -170,7 +170,8 @@ popoutButton.addEventListener("click", popOut);
 
 // events
 function modeChanged(event) {
-    logger.info("mode changed");
+    log.info("mode changed");
+    log.debug(event.target.value);
 
     let selected = event.target;
     calc.setMode(selected.value);
@@ -180,8 +181,8 @@ function modeChanged(event) {
 }
 
 function inputChanged(event) {
-    logger.info("input changed");
-    logger.trace(event.target.value);
+    log.info("input changed");
+    log.debug(event.target.value);
 
     switch (event.target.id) {
         case unsignedDecTextbox.id:
@@ -202,13 +203,13 @@ function inputChanged(event) {
 }
 
 function bitChanged(event) {
-    logger.info("bit changed");
+    log.info("bit changed");
 
     calc.setFlags(event.target.checked, event.target.value, updateAll);
 }
 
 function inputLeft(event) {
-    logger.info("input left");
+    log.info("input left");
 
     if (event.target.value == "") {
         // fill in blanks on leave
@@ -217,12 +218,12 @@ function inputLeft(event) {
 }
 
 function inputRightClicked(event) {
-    logger.info("right clicked");
+    log.info("right clicked");
 
     event.preventDefault();
     let copyValue = event.target.value;
     navigator.clipboard.writeText(copyValue);
-    logger.debug(copyValue);
+    log.debug(copyValue);
 }
 
 function incClicked() {
@@ -234,37 +235,37 @@ function decClicked() {
 }
 
 function bslButtonClicked() {
-    logger.info("bsl clicked");
+    log.info("bsl clicked");
     calc.bsl(updateAll);
 }
 
 function bsrButtonClicked() {
-    logger.info("bsr clicked");
+    log.info("bsr clicked");
     calc.bsr(updateAll);
 }
 
 function rolButtonClicked() {
-    logger.info("rol clicked");
+    log.info("rol clicked");
     calc.rol(updateAll);
 }
 
 function rorButtonClicked() {
-    logger.info("ror clicked");
+    log.info("ror clicked");
     calc.ror(updateAll);
 }
 
 function onesCompClicked() {
-    logger.info("one's complement");
+    log.info("one's complement");
     calc.onesComplement(updateAll);
 }
 
 function twosCompClicked() {
-    logger.info("two's complement");
+    log.info("two's complement");
     calc.twosComplement(updateAll);
 }
 
 function xbaButtonClicked() {
-    logger.info("xba clicked");
+    log.info("xba clicked");
     calc.xba(updateAll);
 }
 
@@ -289,7 +290,7 @@ function validateFormat(event, num) {
 
     // invalid character
     if (!num.chars.test(event.key)) {
-        logger.debug(event.key + " key prevented");
+        log.debug(event.key + " key prevented");
         event.preventDefault();
         return;
     }
@@ -301,11 +302,10 @@ function validateFormat(event, num) {
     } else {
         var newValue = event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
     }
-    logger.trace(newValue);
 
     // invalid format
     if (!num.format.test(newValue)) {
-        logger.debug(event.key + " format prevented");
+        log.debug(event.key + " format prevented");
         event.preventDefault();
         return;
     }
@@ -314,7 +314,7 @@ function validateFormat(event, num) {
     let maxLength = calc.modeMaxLength(num.base);
     if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
-        logger.debug(newValue + " too many digits");
+        log.debug(newValue + " too many digits");
         event.preventDefault();
         return;
     }
@@ -325,7 +325,7 @@ function validateFormat(event, num) {
             // is negative, handle min value
             let signedMin = calc.signedMin();
             if (newValue < signedMin) {
-                logger.debug(newValue + " negative signed number too low");
+                log.debug(newValue + " negative signed number too low");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMin, updateAll);
                 return;
@@ -334,7 +334,7 @@ function validateFormat(event, num) {
             // is positive, handle lower max value
             let signedMax = calc.signedMax();
             if (newValue > signedMax) {
-                logger.debug(newValue + " positive signed number too high");
+                log.debug(newValue + " positive signed number too high");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMax, updateAll);
                 return;
@@ -344,7 +344,7 @@ function validateFormat(event, num) {
     
     // value too high, set to max
     if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
-        logger.debug(newValue + " value too high");
+        log.debug(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
         return;
@@ -352,7 +352,7 @@ function validateFormat(event, num) {
 }
 
 function buildCustomViewSelect() {
-    logger.info("build custom view select");
+    log.info("build custom view select");
 
     let select = document.createElement("select");
     select.className = "";
@@ -373,7 +373,7 @@ function buildCustomViewSelect() {
     }
 
     select.addEventListener("change", (event) => {
-        logger.info("select option changed");
+        log.info("select option changed");
 
          // clear previous views
         customView.innerHTML = "";
@@ -391,8 +391,7 @@ function buildCustomViewSelect() {
 }
 
 function buildCustomView(i) {
-    logger.info("build custom view");
-
+    log.info("build custom view");
     
     let name = customViews[i].name;
     let format = customViews[i].format;
@@ -404,8 +403,6 @@ function buildCustomView(i) {
             let control = controls[j];
             // give id to custom view inputs
             let id = "custom-input-" + j;
-    
-            logger.trace(control.toString())
             let inputDiv = buildInput(id, control);
             let labelDiv = buildLabel(id, control);
             
@@ -429,7 +426,7 @@ function buildInput(id, control) {
             var input = buildCheckbox(id, control.pos);
             break;
         default:
-            logger.error("invalid custom control type");
+            log.error("invalid custom control type");
     }
 
     inputDiv.appendChild(input);
@@ -446,7 +443,7 @@ function buildTextbox(id, pos, size) {
     textbox.dataset.size = size;
 
     textbox.addEventListener("input", (event) => {
-        logger.info("custom textbox input changed");
+        log.info("custom textbox input changed");
         // TODO: set max if out of range
         let val = event.target.value;
         let pos = event.target.dataset.pos;
@@ -468,7 +465,7 @@ function buildCheckbox(id, pos) {
     checkbox.dataset.pos = pos;
 
     checkbox.addEventListener("change", (event) => {
-        logger.info("custom checkbox input changed");
+        log.info("custom checkbox input changed");
         let val = event.target.checked;
         calc.setCustomFlags(val, pos, 1, updateAll);
 
@@ -492,19 +489,10 @@ function buildLabel(id, control) {
 }
 
 function popOut() {
-    logger.info("popout");
+    log.info("popout");
     window.open("index.html", "_blank", "popup=true,width=600,height=800");
 }
 
-
-// init logger
-var logger = new Logger(LOG_LEVEL.trace);
-
-logger.error("errors only");
-logger.warning("warnings and errors on");
-logger.info("info, warnings, and errors on");
-logger.debug("debug on");
-logger.trace("trace on");
 
 buildCustomViewSelect();
 

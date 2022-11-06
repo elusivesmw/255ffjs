@@ -97,7 +97,7 @@ class Calc {
             this.value &= ~flag;
         }
         this.value = this.mode & this.value;
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -145,7 +145,7 @@ class Calc {
     inc(callback) {
         this.value++;
         if (this.value > this.mode) this.value = 0; 
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -153,7 +153,7 @@ class Calc {
     dec(callback) {
         this.value--;
         if (this.value < 0) this.value = parseInt(this.mode); 
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -161,7 +161,7 @@ class Calc {
     onesComplement(callback) {
         let mask = parseInt(~this.value & this.mode);
         this.value = mask;
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -178,14 +178,14 @@ class Calc {
         if (this.value >= this.mode) {
             this.value -= parseInt(this.mode) + 1;
         }
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
 
     bsr(callback) {
         this.value = this.value >> 1;
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -195,7 +195,7 @@ class Calc {
         if (this.value > this.mode) {
             this.value -= this.mode;
         }
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -206,20 +206,20 @@ class Calc {
         if (carry == 1) {
             this.value  += Math.floor(this.mode / 2) + 1;
         }
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
 
     xba(callback) {
         if (this.mode != MODE._16bit) {
-            logger.warning("invalid mode for xba");
+            log.warning("invalid mode for xba");
             return;
         }
         let high = (0xFF00 & this.value) >> 8;
         let low = (0x00FF & this.value) << 8;
         this.value = high | low;
-        logger.debug(this.value);
+        log.debug(this.value);
 
         if (callback) callback();
     }
