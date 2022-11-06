@@ -181,6 +181,7 @@ function modeChanged(event) {
 
 function inputChanged(event) {
     logger.info("input changed");
+    logger.trace(event.target.value);
 
     switch (event.target.id) {
         case unsignedDecTextbox.id:
@@ -268,36 +269,86 @@ function xbaButtonClicked() {
 }
 
 function validateUnsignedDec(event) {
-    const unsignedDecChars = new RegExp("[0-9]");
-    validateFormat(event, unsignedDecChars);
+    validateFormat(event, NUM.unsigned);
 }
 
 function validateSignedDec(event) {
-    const signedDecChars = new RegExp("[\-0-9]");
-    validateFormat(event, signedDecChars);
+    validateFormat(event, NUM.signed);
 }
 
 function validateHex(event) {
-    logger.error("not yet implemented");
+    validateFormat(event, NUM.hex);
 }
 
 function validateBinary(event) {
-    const binaryChars = new RegExp("[01]");
-    validateFormat(event, binaryChars);
+    validateFormat(event, NUM.binary);
 }
 
-function validateFormat(event, format) {
+function validateFormat(event, num) {
     if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
 
-    if (!format.test(event.key)) {
-        logger.debug(event.key + " prevented");
+    // invalid character
+    if (!num.chars.test(event.key)) {
+        logger.debug(event.key + " key prevented");
         event.preventDefault();
+        return;
     }
 
-    // TODO: figure out this validation
-    // if (format.test(event.target.value)) {
-    //     logger.trace("whole format mismatch");
-    // }
+    // mimick what the value will be if we let the keypress through
+    // TODO: figure out how to handle insert mode
+    if (event.target.selectionStart === event.target.selectionEnd) {
+        var newValue = event.target.value.insert(event.target.selectionStart, event.key);
+    } else {
+        var newValue = event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+    }
+    logger.trace(newValue);
+
+    // invalid format
+    if (!num.format.test(newValue)) {
+        logger.debug(event.key + " format prevented");
+        event.preventDefault();
+        return;
+    }
+
+    // too many digits
+    let maxLength = calc.modeMaxLength(num.base);
+    if (newValue.substring(0,1) == "-") ++maxLength;
+    if (newValue.length > maxLength) {
+        logger.debug(newValue + " too many digits");
+        event.preventDefault();
+        return;
+    }
+
+    // is signed
+    if (num == NUM.signed) {
+        if (newValue.length > 1 && newValue.substring(0, 1) == "-") {
+            // is negative, handle min value
+            let signedMin = calc.signedMin();
+            if (newValue < signedMin) {
+                logger.debug(newValue + " negative signed number too low");
+                event.preventDefault();
+                calc.setFromSignedDec(signedMin, updateAll);
+                return;
+            }
+        } else {
+            // is positive, handle lower max value
+            let signedMax = calc.signedMax();
+            if (newValue > signedMax) {
+                logger.debug(newValue + " positive signed number too high");
+                event.preventDefault();
+                calc.setFromSignedDec(signedMax, updateAll);
+                return;
+            }
+        }
+    }
+    
+    // value too high, set to max
+    if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
+        logger.debug(newValue + " value too high");
+        event.preventDefault();
+        calc.setMaxValue(updateAll);
+        return;
+    }
 }
 
 function buildCustomViewSelect() {

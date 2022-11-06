@@ -1,5 +1,5 @@
 /**
- * Modes with their max values.
+ * Modes with their max values
  */
 const MODE = Object.freeze({
     _8bit: 0xFF,
@@ -7,12 +7,38 @@ const MODE = Object.freeze({
 });
 
 /**
- * Number bases.
+ * Number bases
  */
 const BASE = Object.freeze({
     binary: 2,
     decimal: 10,
     hex: 16
+});
+
+/**
+ * Number formats
+ */
+const NUM = Object.freeze({
+    unsigned: {
+        base: BASE.decimal,
+        chars: /\d/,
+        format: /\d+/
+    },
+    signed: {
+        base: BASE.decimal,
+        chars: /[\-\d]/,
+        format: /^-$|^-[1-9]+[\d]*$|^[\d]+$/
+    },
+    hex: {
+        base: BASE.hex,
+        chars: /[\da-fA-F]/,
+        format: /[\da-fA-F]+/
+    },
+    binary: {
+        base: BASE.binary,
+        chars: /[01]/,
+        format: /[01]+/
+    }
 });
 
 /**
@@ -30,6 +56,12 @@ class Calc {
         this.mode = newMode;
 
         if (callback) callback(newMode);
+    }
+
+    setMaxValue(callback) {
+        this.value = parseInt(this.mode);
+
+        if (callback) callback();
     }
 
     setFromUnsignedDec(newValue, callback) {
@@ -219,5 +251,19 @@ class Calc {
             value = "0" + value;
         }
         return value;
+    }
+
+    modeMaxLength(base) {
+        return parseInt(this.mode).toString(base).length;
+    }
+
+    signedMin() {
+        let max = parseInt(this.mode) + 1;
+        return (max/2) - max;
+    }
+
+    signedMax() {
+        let max = parseInt(this.mode) + 1;
+        return (max/2) - 1;
     }
 }
