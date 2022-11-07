@@ -8,6 +8,16 @@ body {
     margin: 0;
 }
 
+.dark body {
+    background-color: #222;
+    color: #eee;
+}
+
+.light body {
+    background-color: white;
+    color: black;
+}
+
 input {
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
@@ -18,24 +28,82 @@ input[type=text] {
     font-weight: bold;
     width: 100%;
 
-    border: 1px solid grey;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
 }
 
+/* hide browser outlining */
+input[type=text]:focus-visible {
+    outline: none;
+}
+
+select:focus-visible {
+    outline: none;
+}
+
+.dark input[type=text] {
+    background: #222;
+    color: #eee;
+    border-color: #344;
+}
+
+.dark input[type=text]:hover {
+    background: #333;
+}
+
+.dark input[type=text]:focus {
+    border-color: #8bf;
+}
+
+.dark input[type=text]:focus {
+    border-color: #8bf;
+}
+
+.light input[type=text] {
+    background: white;
+    color: black;
+    border-color: #000;
+}
+
+
 button {
     min-width: 50px;
-    background-color: #f0f0f0;
-    border: 1px solid grey;
+
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
 
     padding: 5px;
 }
 
-button:hover {
+.dark button {
+    background: #566;
+    color: #eee;
+    border-color: #466;
+}
+
+.dark button:hover {
+    background: #777;
+    border-color: #777;
+}
+
+.dark button:active {
+    border-color: #eee;
+}
+
+
+
+.light button {
+    border-color: grey;
+}
+
+.light button:hover {
+    border-color: grey;
     background-color: lightgrey;
 }
 
-button:active {
+.light button:active {
     border-color: black;
     background-color: lightgrey;
 }
@@ -53,12 +121,21 @@ button:active {
     margin: 0 0 0 25px;
     padding: 4px 8px;
 
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
 
-    background-color: white;
 }
 
+.dark .modes {
+    background-color: #222;
+    border-color: #344;
+}
+
+.light .modes {
+    background-color: white;
+    border-color: black;
+}
 
 .main-grid {
     display: flex;
@@ -69,10 +146,17 @@ button:active {
     margin: 0 10px 10px 10px;
     padding: 30px 10px 10px 10px;
     
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 8px;
+}
 
-    background-color: white;
+.dark .main-grid {
+    border-color: #344;
+}
+
+.light .main-grid {
+    border-color: black;
 }
 
 .inputs-grid {
@@ -124,16 +208,13 @@ button:active {
     }
 }
 
-.operator {
-
-}
 
 #custom-view-select {
     display: block;
     margin: 10px 10px -15px 10px;
 }
 
-#custom-view-select select{
+#custom-view-select select {
     display: inline-flex;
     flex-wrap: nowrap;
     gap: 10px;
@@ -143,8 +224,19 @@ button:active {
 
     font-size: 16px;
 
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
+}
+
+.dark #custom-view-select select {
+    background-color: #222;
+    color: #eee;
+    border-color: #344;
+}
+
+.light #custom-view-select select {
+    border-color: black;
 }
 
 #custom-view {
@@ -158,15 +250,23 @@ button:active {
     margin: 0 10px 25px 10px;
     padding: 30px 10px 10px 10px;
     
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 8px;
+}
 
-    background-color: white;
+.dark #custom-view {
+    border-color: #344;
+}
+
+.light #custom-view  {
+    border-color: black;
 }
 
 #custom-view.inactive {
     padding: 0;
     border-bottom: 0;
+    border-collapse: collapse;
 }
 
 .col-custom-label {
@@ -178,8 +278,36 @@ button:active {
 }
 
 .row {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin: 10px;
+}
+
+ul.color {
+    display: inline-flex;
+    list-style-type: none;
+    padding-inline-start: 0;
+    gap: 0;
+    margin: 0;
+}
+
+.dark ul.color li a {
+    color: #8bf;
+}
+
+.light ul.color li a {
+    color: blue;
+}
+
+ul.color li:not(:first-child):before {
+    content: "|";
+    margin: 0 .5em;
+}
+
+.dark ul.color li:before {
+    color: #eee;
+}
+
+.light ul.color li:before {
+    color: black;
 }
 
 hr {
