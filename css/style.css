@@ -8,6 +8,16 @@ body {
     margin: 0;
 }
 
+.dark body {
+    background-color: #222;
+    color: #eee;
+}
+
+.light body {
+    background-color: #fff;
+    color: #222;
+}
+
 input {
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
@@ -18,26 +28,94 @@ input[type=text] {
     font-weight: bold;
     width: 100%;
 
-    border: 1px solid grey;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
+}
+
+/* hide browser outlining */
+input[type=text]:focus-visible {
+    outline: none;
+}
+
+select:focus-visible {
+    outline: none;
+}
+
+.dark input[type=text] {
+    background-color: #222;
+    color: #eee;
+    border-color: #333;
+}
+
+.dark input[type=text]:hover {
+    background-color: #333;
+}
+
+.dark input[type=text]:focus {
+    border-color: #8bf;
+}
+
+.light input[type=text] {
+    background-color: #fff;
+    color: #222;
+    border-color: #ddd;
+}
+
+.light input[type=text]:hover {
+    border-color: #777;
+}
+
+.light input[type=text]:focus {
+    border-color: #48f;
 }
 
 button {
     min-width: 50px;
-    background-color: #f0f0f0;
-    border: 1px solid grey;
+
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
 
     padding: 5px;
 }
 
-button:hover {
-    background-color: lightgrey;
+.dark button {
+    background-color: #666;
+    color: #eee;
+    border-color: #666;
 }
 
-button:active {
-    border-color: black;
-    background-color: lightgrey;
+.dark button[disabled] {
+    color: #bbb;
+}
+
+.dark button:hover {
+    background-color: #777;
+    border-color: #777;
+}
+
+.dark button:active {
+    border-color: #eee;
+}
+
+.light button {
+    background-color: #ddd;
+    color: #222;
+    border-color: #ddd;
+}
+
+.light button[disabled] {
+    color: #555;
+}
+
+.light button:hover {
+    background-color: #ccc;
+    border-color: #ccc;
+}
+
+.light button:active {
+    border-color: #777;
 }
 
 .modes-wrapper {
@@ -53,12 +131,21 @@ button:active {
     margin: 0 0 0 25px;
     padding: 4px 8px;
 
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
 
-    background-color: white;
 }
 
+.dark .modes {
+    background-color: #222;
+    border-color: #333;
+}
+
+.light .modes {
+    background-color: #fff;
+    border-color: #ddd;
+}
 
 .main-grid {
     display: flex;
@@ -69,10 +156,17 @@ button:active {
     margin: 0 10px 10px 10px;
     padding: 30px 10px 10px 10px;
     
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 8px;
+}
 
-    background-color: white;
+.dark .main-grid {
+    border-color: #333;
+}
+
+.light .main-grid {
+    border-color: #ddd;
 }
 
 .inputs-grid {
@@ -124,16 +218,13 @@ button:active {
     }
 }
 
-.operator {
-
-}
 
 #custom-view-select {
     display: block;
     margin: 10px 10px -15px 10px;
 }
 
-#custom-view-select select{
+#custom-view-select select {
     display: inline-flex;
     flex-wrap: nowrap;
     gap: 10px;
@@ -143,8 +234,19 @@ button:active {
 
     font-size: 16px;
 
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 4px;
+}
+
+.dark #custom-view-select select {
+    background-color: #222;
+    color: #eee;
+    border-color: #333;
+}
+
+.light #custom-view-select select {
+    border-color: #ddd;
 }
 
 #custom-view {
@@ -154,19 +256,26 @@ button:active {
     align-items: center;
     gap: 10px;
 
-    margin: 10px;
-    margin: 0 10px 25px 10px;
+    margin: 0 10px 10px 10px;
     padding: 30px 10px 10px 10px;
     
-    border: 1px solid black;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 8px;
+}
 
-    background-color: white;
+.dark #custom-view {
+    border-color: #333;
+}
+
+.light #custom-view  {
+    border-color: #ddd;
 }
 
 #custom-view.inactive {
     padding: 0;
     border-bottom: 0;
+    margin-bottom: 25px;
 }
 
 .col-custom-label {
@@ -178,10 +287,44 @@ button:active {
 }
 
 .row {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin: 10px;
 }
 
-hr {
-    margin: 100px 0;
+.status {
+    display: flex;
+    justify-content:  space-between;
+}
+
+ul.color {
+    display: inline-flex;
+    list-style-type: none;
+    padding-inline-start: 0;
+    gap: 0;
+    margin: 0;
+}
+
+.dark ul.color li a {
+    color: #8bf;
+}
+
+.light ul.color li a {
+    color: #48f;
+}
+
+ul.color li:not(:first-child):before {
+    content: "|";
+    margin: 0 .5em;
+}
+
+.dark ul.color li:before {
+    color: #eee;
+}
+
+.light ul.color li:before {
+    color: #222;
+}
+
+.debug {
+    display: inline-flex;
+    
 }

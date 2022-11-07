@@ -1,4 +1,6 @@
 // dom elements
+const html = document.documentElement;
+
 const inputs = document.getElementsByClassName("input");
 const outputs = document.getElementsByClassName("output");
 
@@ -25,6 +27,10 @@ const customViewSelect = document.getElementById("custom-view-select");
 const customView = document.getElementById("custom-view");
 
 const popoutButton = document.getElementById("pop-out");
+
+const lightModeLink = document.getElementById("light-mode");
+const darkModeLink = document.getElementById("dark-mode");
+const autoModeLink = document.getElementById("auto-mode");
 
 const valueSpan = document.getElementById("valueSpan");
 
@@ -167,6 +173,12 @@ binaryTextbox.addEventListener("contextmenu", inputRightClicked);
 
 // popout
 popoutButton.addEventListener("click", popOut);
+
+// light mode, dark mode
+darkModeLink.addEventListener("click", setDarkMode);
+lightModeLink.addEventListener("click", setLightMode);
+autoModeLink.addEventListener("click", setAutoMode);
+
 
 // events
 function modeChanged(event) {
@@ -493,6 +505,24 @@ function popOut() {
     window.open("index.html", "_blank", "popup=true,width=600,height=800");
 }
 
+function setDarkMode() {
+    log.info("dark mode");
+    html.className = "dark";
+}
+
+function setLightMode() {
+    log.info("light mode");
+    html.className = "light";
+}
+
+function setAutoMode() {
+    log.info("auto mode");
+    let date = new Date();
+    let daytime = date.getHours() >= 8 && date.getHours() < 18;
+    log.debug(date.getHours());
+
+    html.className = daytime ? "light" : "dark";
+}
 
 buildCustomViewSelect();
 
