@@ -284,6 +284,11 @@ button {
     margin: 10px;
 }
 
+.status {
+    display: flex;
+    justify-content:  space-between;
+}
+
 ul.color {
     display: inline-flex;
     list-style-type: none;
@@ -313,6 +318,7 @@ ul.color li:not(:first-child):before {
     color: #222;
 }
 
-hr {
-    margin: 100px 0;
+.debug {
+    display: inline-flex;
+    
 }
