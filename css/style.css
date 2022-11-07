@@ -14,8 +14,8 @@ body {
 }
 
 .light body {
-    background-color: white;
-    color: black;
+    background-color: #fff;
+    color: #222;
 }
 
 input {
@@ -43,17 +43,13 @@ select:focus-visible {
 }
 
 .dark input[type=text] {
-    background: #222;
+    background-color: #222;
     color: #eee;
     border-color: #344;
 }
 
 .dark input[type=text]:hover {
-    background: #333;
-}
-
-.dark input[type=text]:focus {
-    border-color: #8bf;
+    background-color: #333;
 }
 
 .dark input[type=text]:focus {
@@ -61,11 +57,18 @@ select:focus-visible {
 }
 
 .light input[type=text] {
-    background: white;
-    color: black;
-    border-color: #000;
+    background-color: #fff;
+    color: #222;
+    border-color: #ddd;
 }
 
+.light input[type=text]:hover {
+    border-color: #777;
+}
+
+.light input[type=text]:focus {
+    border-color: #48f;
+}
 
 button {
     min-width: 50px;
@@ -78,13 +81,13 @@ button {
 }
 
 .dark button {
-    background: #566;
+    background-color: #566;
     color: #eee;
     border-color: #466;
 }
 
 .dark button:hover {
-    background: #777;
+    background-color: #777;
     border-color: #777;
 }
 
@@ -95,17 +98,17 @@ button {
 
 
 .light button {
-    border-color: grey;
+    background-color: #ddd;
+    border-color: #ddd;
 }
 
 .light button:hover {
-    border-color: grey;
-    background-color: lightgrey;
+    background-color: #ddd;
+    border-color: #ddd;
 }
 
 .light button:active {
-    border-color: black;
-    background-color: lightgrey;
+    border-color: #777;
 }
 
 .modes-wrapper {
@@ -133,8 +136,8 @@ button {
 }
 
 .light .modes {
-    background-color: white;
-    border-color: black;
+    background-color: #fff;
+    border-color: #ddd;
 }
 
 .main-grid {
@@ -156,7 +159,7 @@ button {
 }
 
 .light .main-grid {
-    border-color: black;
+    border-color: #ddd;
 }
 
 .inputs-grid {
@@ -236,7 +239,7 @@ button {
 }
 
 .light #custom-view-select select {
-    border-color: black;
+    border-color: #ddd;
 }
 
 #custom-view {
@@ -260,7 +263,7 @@ button {
 }
 
 .light #custom-view  {
-    border-color: black;
+    border-color: #ddd;
 }
 
 #custom-view.inactive {
@@ -294,7 +297,7 @@ ul.color {
 }
 
 .light ul.color li a {
-    color: blue;
+    color: #48f;
 }
 
 ul.color li:not(:first-child):before {
@@ -307,7 +310,7 @@ ul.color li:not(:first-child):before {
 }
 
 .light ul.color li:before {
-    color: black;
+    color: #222;
 }
 
 hr {
