@@ -45,7 +45,7 @@ select:focus-visible {
 .dark input[type=text] {
     background-color: #222;
     color: #eee;
-    border-color: #344;
+    border-color: #333;
 }
 
 .dark input[type=text]:hover {
@@ -81,9 +81,13 @@ button {
 }
 
 .dark button {
-    background-color: #566;
+    background-color: #666;
     color: #eee;
-    border-color: #466;
+    border-color: #666;
+}
+
+.dark button[disabled] {
+    color: #bbb;
 }
 
 .dark button:hover {
@@ -95,16 +99,19 @@ button {
     border-color: #eee;
 }
 
-
-
 .light button {
     background-color: #ddd;
+    color: #222;
     border-color: #ddd;
 }
 
+.light button[disabled] {
+    color: #555;
+}
+
 .light button:hover {
-    background-color: #ddd;
-    border-color: #ddd;
+    background-color: #ccc;
+    border-color: #ccc;
 }
 
 .light button:active {
@@ -132,7 +139,7 @@ button {
 
 .dark .modes {
     background-color: #222;
-    border-color: #344;
+    border-color: #333;
 }
 
 .light .modes {
@@ -155,7 +162,7 @@ button {
 }
 
 .dark .main-grid {
-    border-color: #344;
+    border-color: #333;
 }
 
 .light .main-grid {
@@ -235,7 +242,7 @@ button {
 .dark #custom-view-select select {
     background-color: #222;
     color: #eee;
-    border-color: #344;
+    border-color: #333;
 }
 
 .light #custom-view-select select {
@@ -259,7 +266,7 @@ button {
 }
 
 .dark #custom-view {
-    border-color: #344;
+    border-color: #333;
 }
 
 .light #custom-view  {
