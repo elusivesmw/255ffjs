@@ -68,6 +68,7 @@ function updateAll(sender) {
             updateControl(output);
         }
     }
+    updateTitle();
 }
 
 function updateCustom(sender) {
@@ -124,6 +125,10 @@ function updateControl(sender) {
         let pos = sender.dataset.pos;
         sender.checked = calc.getCustomFlags(pos, 1);
     }
+}
+
+function updateTitle() {
+    document.title = calc.unsignedDec + " - 0x" + calc.hex
 }
 
 // add mode listeners
