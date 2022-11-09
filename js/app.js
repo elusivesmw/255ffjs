@@ -237,10 +237,10 @@ function inputLeft(event) {
 function inputRightClicked(event) {
     log.info("right clicked");
 
-    event.preventDefault();
-    let copyValue = event.target.value;
-    navigator.clipboard.writeText(copyValue);
-    log.debug(copyValue);
+    // event.preventDefault();
+    // let copyValue = event.target.value;
+    // navigator.clipboard.writeText(copyValue);
+    // log.debug(copyValue);
 }
 
 function incClicked() {
@@ -305,37 +305,61 @@ function validateBinary(event) {
 function validateFormat(event, num) {
     if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
 
+    if (invalidChar(event, num)) return;
+
+    let newValue = valueAfterKeyPress(event);
+
+    if (invalidFormat(event, num, newValue)) return;
+
+    if (tooManyDigits(event, num, newValue)) return;
+
+    if (signedOutOfRange(event, num, newValue)) return;
+
+    if (valueTooHigh(event, num, newValue)) return;
+}
+
+function invalidChar(event, num) {
     // invalid character
     if (!num.chars.test(event.key)) {
         log.debug(event.key + " key prevented");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function valueAfterKeyPress(event) {
     // mimick what the value will be if we let the keypress through
     // TODO: figure out how to handle insert mode
     if (event.target.selectionStart === event.target.selectionEnd) {
-        var newValue = event.target.value.insert(event.target.selectionStart, event.key);
-    } else {
-        var newValue = event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+        return event.target.value.insert(event.target.selectionStart, event.key);
     }
+    return event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+}
 
+function invalidFormat(event, num, newValue) {
     // invalid format
     if (!num.format.test(newValue)) {
         log.debug(event.key + " format prevented");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function tooManyDigits(event, num, newValue) {
     // too many digits
     let maxLength = calc.modeMaxLength(num.base);
     if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
         log.debug(newValue + " too many digits");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function signedOutOfRange(event, num, newValue) {
     // is signed
     if (num == NUM.signed) {
         if (newValue.length > 1 && newValue.substring(0, 1) == "-") {
@@ -345,7 +369,7 @@ function validateFormat(event, num) {
                 log.debug(newValue + " negative signed number too low");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMin, updateAll);
-                return;
+                return true;
             }
         } else {
             // is positive, handle lower max value
@@ -354,19 +378,30 @@ function validateFormat(event, num) {
                 log.debug(newValue + " positive signed number too high");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMax, updateAll);
-                return;
+                return true;
             }
         }
     }
-    
+    return false;
+}
+
+function valueTooHigh(event, num, newValue) {
     // value too high, set to max
     if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
         log.debug(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
-        return;
+        return true;
     }
+    return false;
 }
+
+
+
+
+
+
+
 
 function buildCustomViewSelect() {
     log.info("build custom view select");
@@ -458,6 +493,13 @@ function buildTextbox(id, pos, size) {
     textbox.id = id;
     textbox.dataset.pos = pos;
     textbox.dataset.size = size;
+
+    textbox.addEventListener("keyup", (event) => {
+        log.info("custom textbox key up");
+
+        if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
+
+    });
 
     textbox.addEventListener("input", (event) => {
         log.info("custom textbox input changed");
