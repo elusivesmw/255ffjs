@@ -303,7 +303,7 @@ function validateBinary(event) {
 }
 
 function validateFormat(event, num) {
-    if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
+    if (isControlChar(event)) return;
 
     if (invalidChar(event, num)) return;
 
@@ -311,11 +311,18 @@ function validateFormat(event, num) {
 
     if (invalidFormat(event, num, newValue)) return;
 
-    if (tooManyDigits(event, num, newValue)) return;
+    let maxValue = calc.modeMaxValue(num.base);
+    if (tooManyDigits(event, newValue, maxValue)) return;
 
     if (signedOutOfRange(event, num, newValue)) return;
 
-    if (valueTooHigh(event, num, newValue)) return;
+    let valueInBase = parseInt(newValue, num.base);
+    if (valueTooHigh(event, valueInBase, maxValue)) return;
+}
+
+function isControlChar(event) {
+    if (event.ctrlKey || event.altKey || event.key.length !== 1) return true;
+    return false;
 }
 
 function invalidChar(event, num) {
@@ -347,10 +354,10 @@ function invalidFormat(event, num, newValue) {
     return false;
 }
 
-function tooManyDigits(event, num, newValue) {
+function tooManyDigits(event, newValue, maxValue) {
     // too many digits
-    let maxLength = calc.modeMaxLength(num.base);
-    if (newValue.substring(0,1) == "-") ++maxLength;
+    let maxLength = maxValue.length;
+    if (newValue.substring(0,1) == "-") ++max;
     if (newValue.length > maxLength) {
         log.debug(newValue + " too many digits");
         event.preventDefault();
@@ -385,9 +392,9 @@ function signedOutOfRange(event, num, newValue) {
     return false;
 }
 
-function valueTooHigh(event, num, newValue) {
+function valueTooHigh(event, newValue, maxValue) {
     // value too high, set to max
-    if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
+    if (parseInt(newValue) > parseInt(maxValue)) {
         log.debug(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
@@ -396,7 +403,26 @@ function valueTooHigh(event, num, newValue) {
     return false;
 }
 
+function customValueTooHigh(event, newValue, maxValue) {
+    // value too high, set to max
+    if (parseInt(newValue) > parseInt(maxValue)) {
+        log.debug(newValue + " value too high");
+        event.preventDefault();
 
+        let pos = event.target.dataset.pos;
+        let size = event.target.dataset.size;
+
+        calc.setCustomFlags(maxValue, pos, size, updateAll);
+        return true;
+    }
+    return false;
+}
+
+
+function bitsMaxValue(bitCount, base) {
+    let maxValue = Math.pow(2, bitCount) - 1;
+    return parseInt(maxValue).toString(base);
+}
 
 
 
@@ -494,26 +520,44 @@ function buildTextbox(id, pos, size) {
     textbox.dataset.pos = pos;
     textbox.dataset.size = size;
 
-    textbox.addEventListener("keyup", (event) => {
-        log.info("custom textbox key up");
-
-        if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
-
-    });
-
-    textbox.addEventListener("input", (event) => {
-        log.info("custom textbox input changed");
-        // TODO: set max if out of range
-        let val = event.target.value;
-        let pos = event.target.dataset.pos;
-        let size = event.target.dataset.size;
-
-        calc.setCustomFlags(val, pos, size, updateAll);
-
-        // TODO: remove event listener when custom view changes
-    });
+    textbox.addEventListener("keydown", customInputKeyDown);
+    textbox.addEventListener("input", customInputChanged);
+    textbox.addEventListener("blur", inputLeft);
 
     return textbox;
+}
+
+function customInputKeyDown(event) {
+    log.info("custom textbox key down");
+
+    if (isControlChar(event)) return;
+
+    if (invalidChar(event, NUM.unsigned)) return;
+
+    let newValue = valueAfterKeyPress(event);
+
+    if (invalidFormat(event, NUM.unsigned, newValue)) return;
+
+    let maxValue = bitsMaxValue(event.target.dataset.size, BASE.unsigned);
+    if (tooManyDigits(event, newValue, maxValue)) return;
+
+    //if (signedOutOfRange(event, NUM.unsigned, newValue)) return;
+
+    let valueInBase = parseInt(newValue).toString(BASE.unsigned);
+    if (customValueTooHigh(event, valueInBase, maxValue)) return;
+}
+
+function customInputChanged(event) {
+    log.info("custom textbox input changed");
+    // TODO: set max if out of range
+    let val = event.target.value;
+    let pos = event.target.dataset.pos;
+    let size = event.target.dataset.size;
+
+    calc.setCustomFlags(val, pos, size);
+    updateAll(event.target);
+
+    // TODO: remove event listener when custom view changes
 }
 
 function buildCheckbox(id, pos) {

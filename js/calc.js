@@ -253,8 +253,8 @@ class Calc {
         return value;
     }
 
-    modeMaxLength(base) {
-        return parseInt(this.mode).toString(base).length;
+    modeMaxValue(base) {
+        return parseInt(this.mode).toString(base);
     }
 
     signedMin() {
