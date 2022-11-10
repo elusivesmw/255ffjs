@@ -412,15 +412,25 @@ function customValueTooHigh(event, newValue, maxValue) {
         let pos = event.target.dataset.pos;
         let size = event.target.dataset.size;
 
-        calc.setCustomFlags(maxValue, pos, size, updateAll);
+        calc.setCustomFlags(maxValue, pos, size);
+        updateAll();
         return true;
     }
     return false;
 }
 
 
-function bitsMaxValue(bitCount, base) {
-    let maxValue = Math.pow(2, bitCount) - 1;
+function bitsMaxValue(event, base) {
+    let pos = event.target.dataset.pos;
+    let size = event.target.dataset.size;
+    let maxValue = Math.pow(2, size) - 1;
+
+    // shift to see if bits go out of mode range
+    let shifted = maxValue << pos;
+    shifted &= calc.mode;
+    // shift back to get max
+    maxValue = shifted >> pos;
+
     return parseInt(maxValue).toString(base);
 }
 
@@ -538,7 +548,7 @@ function customInputKeyDown(event) {
 
     if (invalidFormat(event, NUM.unsigned, newValue)) return;
 
-    let maxValue = bitsMaxValue(event.target.dataset.size, BASE.unsigned);
+    let maxValue = bitsMaxValue(event, BASE.unsigned);
     if (tooManyDigits(event, newValue, maxValue)) return;
 
     //if (signedOutOfRange(event, NUM.unsigned, newValue)) return;
