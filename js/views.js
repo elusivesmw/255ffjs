@@ -599,20 +599,23 @@ var customViews = [
             "type": "CheckBox",
             "pos": 15
         }, {
-            "label": "Blue",
+            "label": "Red",
             "type": "TextBox",
-            "pos": 10,
-            "size": 5
+            "pos": 0,
+            "size": 5,
+            "weight": 3
         }, {
             "label": "Green",
             "type": "TextBox",
             "pos": 5,
-            "size": 5
+            "size": 5,
+            "weight": 3
         }, {
-            "label": "Red",
+            "label": "Blue",
             "type": "TextBox",
-            "pos": 0,
-            "size": 5
+            "pos": 10,
+            "size": 5,
+            "weight": 3
         }]
     }, 
 ];

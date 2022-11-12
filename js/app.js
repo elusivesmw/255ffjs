@@ -114,9 +114,15 @@ function updateControl(sender) {
     // custom textboxes
     if (sender.type === "text" && sender.id.startsWith("custom-input")) {
         log.debug("change custom text");
+
         let pos = sender.dataset.pos;
         let size = sender.dataset.size;
-        sender.value = calc.getCustomFlags(pos, size);
+        let weight = sender.dataset.weight;
+        
+        let val = calc.getCustomFlags(pos, size);
+        // apply weight before setting textbox value
+        if (weight > 0) val = val << weight;
+        sender.value = val;
     }
 
     // custom checkboxes
@@ -228,8 +234,9 @@ function bitChanged(event) {
 function inputLeft(event) {
     log.info("input left");
 
-    if (event.target.value == "") {
-        // fill in blanks on leave
+    // if value is blank, we need to set value as 0
+    // if weight is set, we need to strip off potential extra bits (round down)
+    if (event.target.value == "" || event.target.dataset.weight > 0) {
         updateControl(event.target);
     }
 }
@@ -411,6 +418,10 @@ function customValueTooHigh(event, newValue, maxValue) {
 
         let pos = event.target.dataset.pos;
         let size = event.target.dataset.size;
+        let weight = event.target.dataset.weight;
+
+        // undo applied weight before setting flags
+        if (weight > 0) maxValue = maxValue >> weight;
 
         calc.setCustomFlags(maxValue, pos, size);
         updateAll();
@@ -423,6 +434,7 @@ function customValueTooHigh(event, newValue, maxValue) {
 function bitsMaxValue(event, base) {
     let pos = event.target.dataset.pos;
     let size = event.target.dataset.size;
+    let weight = event.target.dataset.weight;
     let maxValue = Math.pow(2, size) - 1;
 
     // shift to see if bits go out of mode range
@@ -430,6 +442,9 @@ function bitsMaxValue(event, base) {
     shifted &= calc.mode;
     // shift back to get max
     maxValue = shifted >> pos;
+
+    // get weighted max value
+    if (weight > 0) maxValue = maxValue << weight;
 
     return parseInt(maxValue).toString(base);
 }
@@ -508,7 +523,7 @@ function buildInput(id, control) {
 
     switch (control.type.toLowerCase()) {
         case "textbox":
-            var input = buildTextbox(id, control.pos, control.size);
+            var input = buildTextbox(id, control.pos, control.size, control.weight);
             break;
         case "checkbox":
             var input = buildCheckbox(id, control.pos);
@@ -522,13 +537,14 @@ function buildInput(id, control) {
     return inputDiv;
 }
 
-function buildTextbox(id, pos, size) {
+function buildTextbox(id, pos, size, weight) {
     let textbox = document.createElement("input");
     textbox.type = "text";
     textbox.className = "input output";
     textbox.id = id;
     textbox.dataset.pos = pos;
     textbox.dataset.size = size;
+    textbox.dataset.weight = weight ?? 0;
 
     textbox.addEventListener("keydown", customInputKeyDown);
     textbox.addEventListener("input", customInputChanged);
@@ -552,22 +568,23 @@ function customInputKeyDown(event) {
     if (tooManyDigits(event, newValue, maxValue)) return;
 
     //if (signedOutOfRange(event, NUM.unsigned, newValue)) return;
-
     let valueInBase = parseInt(newValue).toString(BASE.unsigned);
     if (customValueTooHigh(event, valueInBase, maxValue)) return;
 }
 
 function customInputChanged(event) {
     log.info("custom textbox input changed");
-    // TODO: set max if out of range
+
     let val = event.target.value;
     let pos = event.target.dataset.pos;
     let size = event.target.dataset.size;
+    let weight = event.target.dataset.weight;
+
+    // undo applied weight before setting flags
+    if (weight > 0) val = val >> weight;
 
     calc.setCustomFlags(val, pos, size);
     updateAll(event.target);
-
-    // TODO: remove event listener when custom view changes
 }
 
 function buildCheckbox(id, pos) {
@@ -581,8 +598,6 @@ function buildCheckbox(id, pos) {
         log.info("custom checkbox input changed");
         let val = event.target.checked;
         calc.setCustomFlags(val, pos, 1, updateAll);
-
-        // TODO: remove event listener when custom view changes
     });
 
     return checkbox;
