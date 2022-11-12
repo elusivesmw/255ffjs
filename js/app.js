@@ -117,12 +117,13 @@ function updateControl(sender) {
 
         let pos = sender.dataset.pos;
         let size = sender.dataset.size;
+        let base = sender.dataset.base;
         let weight = sender.dataset.weight;
         
         let val = calc.getCustomFlags(pos, size);
         // apply weight before setting textbox value
         if (weight > 0) val = val << weight;
-        sender.value = val;
+        sender.value = val.toString(base);
     }
 
     // custom checkboxes
@@ -412,7 +413,8 @@ function valueTooHigh(event, newValue, maxValue) {
 
 function customValueTooHigh(event, newValue, maxValue) {
     // value too high, set to max
-    if (parseInt(newValue) > parseInt(maxValue)) {
+    let base = event.target.dataset.base;
+    if (parseInt(newValue, base) > parseInt(maxValue, base)) {
         log.debug(newValue + " value too high");
         event.preventDefault();
 
@@ -439,6 +441,7 @@ function bitsMaxValue(event, base) {
 
     // shift to see if bits go out of mode range
     let shifted = maxValue << pos;
+    
     shifted &= calc.mode;
     // shift back to get max
     maxValue = shifted >> pos;
@@ -446,7 +449,7 @@ function bitsMaxValue(event, base) {
     // get weighted max value
     if (weight > 0) maxValue = maxValue << weight;
 
-    return parseInt(maxValue).toString(base);
+    return parseInt(maxValue, base).toString(base);
 }
 
 
@@ -523,10 +526,10 @@ function buildInput(id, control) {
 
     switch (control.type.toLowerCase()) {
         case "textbox":
-            var input = buildTextbox(id, control.pos, control.size, control.weight);
+            var input = buildTextbox(id, control);
             break;
         case "checkbox":
-            var input = buildCheckbox(id, control.pos);
+            var input = buildCheckbox(id, control);
             break;
         default:
             log.error("invalid custom control type");
@@ -537,14 +540,15 @@ function buildInput(id, control) {
     return inputDiv;
 }
 
-function buildTextbox(id, pos, size, weight) {
+function buildTextbox(id, control) {
     let textbox = document.createElement("input");
     textbox.type = "text";
     textbox.className = "input output";
     textbox.id = id;
-    textbox.dataset.pos = pos;
-    textbox.dataset.size = size;
-    textbox.dataset.weight = weight ?? 0;
+    textbox.dataset.pos = control.pos;
+    textbox.dataset.size = control.size;
+    textbox.dataset.base = control.base ?? 10;
+    textbox.dataset.weight = control.weight ?? 0;
 
     textbox.addEventListener("keydown", customInputKeyDown);
     textbox.addEventListener("input", customInputChanged);
@@ -555,30 +559,35 @@ function buildTextbox(id, pos, size, weight) {
 
 function customInputKeyDown(event) {
     log.info("custom textbox key down");
+    let base = event.target.dataset.base;
+    let num = NUM.getNumFromBase(base);
+
 
     if (isControlChar(event)) return;
 
-    if (invalidChar(event, NUM.unsigned)) return;
+    if (invalidChar(event, num)) return;
 
     let newValue = valueAfterKeyPress(event);
 
-    if (invalidFormat(event, NUM.unsigned, newValue)) return;
+    if (invalidFormat(event, num, newValue)) return;
 
-    let maxValue = bitsMaxValue(event, BASE.unsigned);
+    let maxValue = bitsMaxValue(event, num.base);
     if (tooManyDigits(event, newValue, maxValue)) return;
 
     //if (signedOutOfRange(event, NUM.unsigned, newValue)) return;
-    let valueInBase = parseInt(newValue).toString(BASE.unsigned);
+    let valueInBase = parseInt(newValue, num.base).toString(num.base);
     if (customValueTooHigh(event, valueInBase, maxValue)) return;
 }
 
 function customInputChanged(event) {
     log.info("custom textbox input changed");
 
-    let val = event.target.value;
     let pos = event.target.dataset.pos;
     let size = event.target.dataset.size;
+    let base = event.target.dataset.base;
     let weight = event.target.dataset.weight;
+
+    let val = parseInt(event.target.value, base);
 
     // undo applied weight before setting flags
     if (weight > 0) val = val >> weight;
@@ -587,12 +596,12 @@ function customInputChanged(event) {
     updateAll(event.target);
 }
 
-function buildCheckbox(id, pos) {
+function buildCheckbox(id, control) {
     let checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "input output";
     checkbox.id = id;
-    checkbox.dataset.pos = pos;
+    checkbox.dataset.pos = control.pos;
 
     checkbox.addEventListener("change", (event) => {
         log.info("custom checkbox input changed");

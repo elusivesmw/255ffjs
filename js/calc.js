@@ -38,6 +38,16 @@ const NUM = Object.freeze({
         base: BASE.binary,
         chars: /[01]/,
         format: /[01]+/
+    },
+    getNumFromBase(base) {
+        switch (base) {
+            case "2":
+                return this.binary;
+            case "16":
+                return this.hex;
+            default:
+                return this.unsigned;
+        }
     }
 });
 
@@ -106,7 +116,7 @@ class Calc {
         let mask = this.getMask(pos, size);
 
         // set weight
-        let shifted = value << pos;
+        let shifted = parseInt(value) << pos;
         shifted &= this.mode;
 
         // clear flag(s)
