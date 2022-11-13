@@ -599,20 +599,62 @@ var customViews = [
             "type": "CheckBox",
             "pos": 15
         }, {
+            "label": "Red",
+            "type": "TextBox",
+            "pos": 0,
+            "size": 5,
+            "base": 16,
+            "weight": 3
+        }, {
+            "label": "Green",
+            "type": "TextBox",
+            "pos": 5,
+            "size": 5,
+            "base": 16,
+            "weight": 3
+        }, {
             "label": "Blue",
             "type": "TextBox",
             "pos": 10,
-            "size": 5
+            "size": 5,
+            "base": 16,
+            "weight": 3
+        }, {
+            "label": "Red",
+            "type": "TextBox",
+            "pos": 0,
+            "size": 5,
+            "weight": 3
+        }, {
+            "label": "Green",
+            "type": "TextBox",
+            "pos": 5,
+            "size": 5,
+            "weight": 3
+        }, {
+            "label": "Blue",
+            "type": "TextBox",
+            "pos": 10,
+            "size": 5,
+            "weight": 3
+        }, {
+            "label": "Red",
+            "type": "TextBox",
+            "pos": 0,
+            "size": 5,
         }, {
             "label": "Green",
             "type": "TextBox",
             "pos": 5,
             "size": 5
         }, {
-            "label": "Red",
+            "label": "Blue",
             "type": "TextBox",
-            "pos": 0,
-            "size": 5
-        }]
+            "pos": 10,
+            "size": 5,
+        }
+    
+    
+    ]
     }, 
 ];

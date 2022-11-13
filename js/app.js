@@ -114,9 +114,16 @@ function updateControl(sender) {
     // custom textboxes
     if (sender.type === "text" && sender.id.startsWith("custom-input")) {
         log.debug("change custom text");
+
         let pos = sender.dataset.pos;
         let size = sender.dataset.size;
-        sender.value = calc.getCustomFlags(pos, size);
+        let base = sender.dataset.base;
+        let weight = sender.dataset.weight;
+        
+        let val = calc.getCustomFlags(pos, size);
+        // apply weight before setting textbox value
+        if (weight > 0) val = val << weight;
+        sender.value = val.toString(base);
     }
 
     // custom checkboxes
@@ -228,8 +235,9 @@ function bitChanged(event) {
 function inputLeft(event) {
     log.info("input left");
 
-    if (event.target.value == "") {
-        // fill in blanks on leave
+    // if value is blank, we need to set value as 0
+    // if weight is set, we need to strip off potential extra bits (round down)
+    if (event.target.value == "" || event.target.dataset.weight > 0) {
         updateControl(event.target);
     }
 }
@@ -237,10 +245,10 @@ function inputLeft(event) {
 function inputRightClicked(event) {
     log.info("right clicked");
 
-    event.preventDefault();
-    let copyValue = event.target.value;
-    navigator.clipboard.writeText(copyValue);
-    log.debug(copyValue);
+    // event.preventDefault();
+    // let copyValue = event.target.value;
+    // navigator.clipboard.writeText(copyValue);
+    // log.debug(copyValue);
 }
 
 function incClicked() {
@@ -303,39 +311,70 @@ function validateBinary(event) {
 }
 
 function validateFormat(event, num) {
-    if (event.ctrlKey || event.altKey || event.key.length !== 1) return;
+    if (isControlChar(event)) return;
 
+    if (invalidChar(event, num)) return;
+
+    let newValue = valueAfterKeyPress(event);
+
+    if (invalidFormat(event, num, newValue)) return;
+
+    let maxValue = calc.modeMaxValue(num.base);
+    if (tooManyDigits(event, newValue, maxValue)) return;
+
+    if (signedOutOfRange(event, num, newValue)) return;
+
+    let valueInBase = parseInt(newValue, num.base);
+    if (valueTooHigh(event, valueInBase, maxValue)) return;
+}
+
+function isControlChar(event) {
+    if (event.ctrlKey || event.altKey || event.key.length !== 1) return true;
+    return false;
+}
+
+function invalidChar(event, num) {
     // invalid character
     if (!num.chars.test(event.key)) {
         log.debug(event.key + " key prevented");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function valueAfterKeyPress(event) {
     // mimick what the value will be if we let the keypress through
     // TODO: figure out how to handle insert mode
     if (event.target.selectionStart === event.target.selectionEnd) {
-        var newValue = event.target.value.insert(event.target.selectionStart, event.key);
-    } else {
-        var newValue = event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+        return event.target.value.insert(event.target.selectionStart, event.key);
     }
+    return event.target.value.insertSelection(event.target.selectionStart, event.target.selectionEnd, event.key);
+}
 
+function invalidFormat(event, num, newValue) {
     // invalid format
     if (!num.format.test(newValue)) {
         log.debug(event.key + " format prevented");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function tooManyDigits(event, newValue, maxValue) {
     // too many digits
-    let maxLength = calc.modeMaxLength(num.base);
+    let maxLength = maxValue.length;
     if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
         log.debug(newValue + " too many digits");
         event.preventDefault();
-        return;
+        return true;
     }
+    return false;
+}
 
+function signedOutOfRange(event, num, newValue) {
     // is signed
     if (num == NUM.signed) {
         if (newValue.length > 1 && newValue.substring(0, 1) == "-") {
@@ -345,7 +384,7 @@ function validateFormat(event, num) {
                 log.debug(newValue + " negative signed number too low");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMin, updateAll);
-                return;
+                return true;
             }
         } else {
             // is positive, handle lower max value
@@ -354,19 +393,69 @@ function validateFormat(event, num) {
                 log.debug(newValue + " positive signed number too high");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMax, updateAll);
-                return;
+                return true;
             }
         }
     }
-    
+    return false;
+}
+
+function valueTooHigh(event, newValue, maxValue) {
     // value too high, set to max
-    if (parseInt(newValue, num.base) > parseInt(calc.mode)) {
+    if (parseInt(newValue) > parseInt(maxValue)) {
         log.debug(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
-        return;
+        return true;
     }
+    return false;
 }
+
+function customValueTooHigh(event, newValue, maxValue) {
+    // value too high, set to max
+    let base = event.target.dataset.base;
+    if (parseInt(newValue, base) > parseInt(maxValue, base)) {
+        log.debug(newValue + " value too high");
+        event.preventDefault();
+
+        let pos = event.target.dataset.pos;
+        let size = event.target.dataset.size;
+        let weight = event.target.dataset.weight;
+
+        // undo applied weight before setting flags
+        if (weight > 0) maxValue = parseInt(maxValue, base) >> weight;
+
+        calc.setCustomFlags(maxValue, pos, size);
+        updateAll();
+        return true;
+    }
+    return false;
+}
+
+
+function bitsMaxValue(event, base) {
+    let pos = event.target.dataset.pos;
+    let size = event.target.dataset.size;
+    let weight = event.target.dataset.weight;
+    let maxValue = Math.pow(2, size) - 1;
+
+    // shift to see if bits go out of mode range
+    let shifted = maxValue << pos;
+    
+    shifted &= calc.mode;
+    // shift back to get max
+    maxValue = shifted >> pos;
+
+    // get weighted max value
+    if (weight > 0) maxValue = maxValue << weight;
+
+    return maxValue.toString(base);
+}
+
+
+
+
+
 
 function buildCustomViewSelect() {
     log.info("build custom view select");
@@ -437,10 +526,10 @@ function buildInput(id, control) {
 
     switch (control.type.toLowerCase()) {
         case "textbox":
-            var input = buildTextbox(id, control.pos, control.size);
+            var input = buildTextbox(id, control);
             break;
         case "checkbox":
-            var input = buildCheckbox(id, control.pos);
+            var input = buildCheckbox(id, control);
             break;
         default:
             log.error("invalid custom control type");
@@ -451,42 +540,72 @@ function buildInput(id, control) {
     return inputDiv;
 }
 
-function buildTextbox(id, pos, size) {
+function buildTextbox(id, control) {
     let textbox = document.createElement("input");
     textbox.type = "text";
     textbox.className = "input output";
     textbox.id = id;
-    textbox.dataset.pos = pos;
-    textbox.dataset.size = size;
+    textbox.dataset.pos = control.pos;
+    textbox.dataset.size = control.size;
+    textbox.dataset.base = control.base ?? 10;
+    textbox.dataset.weight = control.weight ?? 0;
 
-    textbox.addEventListener("input", (event) => {
-        log.info("custom textbox input changed");
-        // TODO: set max if out of range
-        let val = event.target.value;
-        let pos = event.target.dataset.pos;
-        let size = event.target.dataset.size;
-
-        calc.setCustomFlags(val, pos, size, updateAll);
-
-        // TODO: remove event listener when custom view changes
-    });
+    textbox.addEventListener("keydown", customInputKeyDown);
+    textbox.addEventListener("input", customInputChanged);
+    textbox.addEventListener("blur", inputLeft);
 
     return textbox;
 }
 
-function buildCheckbox(id, pos) {
+function customInputKeyDown(event) {
+    log.info("custom textbox key down");
+    let base = event.target.dataset.base;
+    let num = NUM.getNumFromBase(base);
+
+
+    if (isControlChar(event)) return;
+
+    if (invalidChar(event, num)) return;
+
+    let newValue = valueAfterKeyPress(event);
+
+    if (invalidFormat(event, num, newValue)) return;
+
+    let maxValue = bitsMaxValue(event, num.base);
+    if (tooManyDigits(event, newValue, maxValue)) return;
+
+    let valueInBase = parseInt(newValue, num.base).toString(num.base);
+    if (customValueTooHigh(event, valueInBase, maxValue)) return;
+}
+
+function customInputChanged(event) {
+    log.info("custom textbox input changed");
+
+    let pos = event.target.dataset.pos;
+    let size = event.target.dataset.size;
+    let base = event.target.dataset.base;
+    let weight = event.target.dataset.weight;
+
+    let val = parseInt(event.target.value, base);
+
+    // undo applied weight before setting flags
+    if (weight > 0) val = val >> weight;
+
+    calc.setCustomFlags(val, pos, size);
+    updateAll(event.target);
+}
+
+function buildCheckbox(id, control) {
     let checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "input output";
     checkbox.id = id;
-    checkbox.dataset.pos = pos;
+    checkbox.dataset.pos = control.pos;
 
     checkbox.addEventListener("change", (event) => {
         log.info("custom checkbox input changed");
         let val = event.target.checked;
         calc.setCustomFlags(val, pos, 1, updateAll);
-
-        // TODO: remove event listener when custom view changes
     });
 
     return checkbox;
