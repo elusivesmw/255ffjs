@@ -602,13 +602,18 @@ function buildCheckbox(id, control) {
     checkbox.id = id;
     checkbox.dataset.pos = control.pos;
 
-    checkbox.addEventListener("change", (event) => {
-        log.info("custom checkbox input changed");
-        let val = event.target.checked;
-        calc.setCustomFlags(val, pos, 1, updateAll);
-    });
+    checkbox.addEventListener("change", customCheckboxChanged);
 
     return checkbox;
+}
+
+function customCheckboxChanged(event) {
+    log.info("custom checkbox input changed");
+
+    let val = event.target.checked ? 1 : 0;
+    let pos = event.target.dataset.pos;
+
+    calc.setCustomFlags(val, pos, 1, updateAll);
 }
 
 function buildLabel(id, control) {
