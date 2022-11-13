@@ -365,7 +365,7 @@ function invalidFormat(event, num, newValue) {
 function tooManyDigits(event, newValue, maxValue) {
     // too many digits
     let maxLength = maxValue.length;
-    if (newValue.substring(0,1) == "-") ++max;
+    if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
         log.debug(newValue + " too many digits");
         event.preventDefault();
@@ -423,7 +423,7 @@ function customValueTooHigh(event, newValue, maxValue) {
         let weight = event.target.dataset.weight;
 
         // undo applied weight before setting flags
-        if (weight > 0) maxValue = maxValue >> weight;
+        if (weight > 0) maxValue = parseInt(maxValue, base) >> weight;
 
         calc.setCustomFlags(maxValue, pos, size);
         updateAll();
@@ -449,7 +449,7 @@ function bitsMaxValue(event, base) {
     // get weighted max value
     if (weight > 0) maxValue = maxValue << weight;
 
-    return parseInt(maxValue, base).toString(base);
+    return maxValue.toString(base);
 }
 
 
@@ -574,7 +574,6 @@ function customInputKeyDown(event) {
     let maxValue = bitsMaxValue(event, num.base);
     if (tooManyDigits(event, newValue, maxValue)) return;
 
-    //if (signedOutOfRange(event, NUM.unsigned, newValue)) return;
     let valueInBase = parseInt(newValue, num.base).toString(num.base);
     if (customValueTooHigh(event, valueInBase, maxValue)) return;
 }
