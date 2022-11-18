@@ -463,19 +463,28 @@ function buildCustomViewSelect() {
     let select = document.createElement("select");
     select.className = "";
     let option =  document.createElement("option");
-    option.value = -1;
+    option.value = "";
     option.innerText = "None";
     select.appendChild(option);
-    
+
     for (let i = 0; i < customViews.length; ++i) {
-        let view = customViews[i];
-        if (view.enabled) {
-            option = document.createElement("option");
-            option.value = i;
-            option.innerText = view.name;
-    
-            select.appendChild(option);
+        let section = customViews[i];
+
+        let optionGroup = document.createElement("optgroup");
+        optionGroup.label = section.title;
+
+        for (let j = 0; j < section.formats.length; ++j) {
+            let view = section.formats[j];
+
+            if (view.enabled) {
+                option = document.createElement("option");
+                option.value = i + "_" + j;
+                option.innerText = view.name;
+        
+                optionGroup.appendChild(option);
+            }
         }
+        select.appendChild(optionGroup);
     }
 
     select.addEventListener("change", (event) => {
@@ -485,7 +494,7 @@ function buildCustomViewSelect() {
         customView.innerHTML = "";
         let val = event.target.value;
         
-        if (val >= 0) {
+        if (val) {
             customView.classList.remove("inactive");
             buildCustomView(val);
         } else {
@@ -496,13 +505,21 @@ function buildCustomViewSelect() {
     customViewSelect.appendChild(select);
 }
 
-function buildCustomView(i) {
+function getViewFromVal(val) {
+    let indices = val.split("_");
+    let i = indices[0];
+    let j = indices[1];
+    return customViews[i].formats[j];
+}
+
+function buildCustomView(val) {
     log.info("build custom view");
+    let view = getViewFromVal(val);
     
-    let name = customViews[i].name;
-    let format = customViews[i].format;
-    let enabled = customViews[i].enabled;
-    let controls = customViews[i].controls;
+    let name = view.name;
+    let format = view.format;
+    let enabled = view.enabled ?? true;
+    let controls = view.controls;
 
     if (enabled) {
         for (let j = 0; j < controls.length; ++j) {

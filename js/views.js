@@ -1,6 +1,7 @@
 // custom views
-var customViews = [
-    {
+var customViews = [{
+    "title": "Sprite",
+    "formats": [{
         "name": "OAM Tile properties",
         "format": "YXPPCCCT",
         "enabled": true,
@@ -214,10 +215,13 @@ var customViews = [
             "type": "CheckBox",
             "pos": 0
         }]
-    }, {
+    }]
+}, {
+    "title": "Misc",
+    "formats": [{
         "name": "Player Blocked status",
         "format": "SxxMUDLR",
-        //"enabled": true,
+        "enabled": true,
         "controls": [{
             "label": "Side of screen contact",
             "type": "CheckBox",
@@ -352,7 +356,10 @@ var customViews = [
             "type": "CheckBox",
             "pos": 0
         }]
-    }, {
+    }]
+}, {
+    "title": "Controller",
+    "formats": [{
         "name": "Controller data 1",
         "format": "byetUDLR",
         "enabled": true,
@@ -410,7 +417,10 @@ var customViews = [
             "type": "CheckBox",
             "pos": 4
         }]
-    }, {
+    }]
+}, {
+    "title": "Binary",
+    "formats": [{
         "name": "Bit value",
         "enabled": true,
         "controls": [{
@@ -516,10 +526,13 @@ var customViews = [
             "pos": 0,
             "size": 8
         }]
-    }, {
+    }]
+}, {
+    "title": "Processor",
+    "formats": [{
         "name": "Processor Flags (Native)",
         "format": "nvmxdizc (e = 0)",
-        "enabled": false,
+        "enabled": true,
         "controls": [{
             "label": "Negative",
             "type": "CheckBox",
@@ -556,7 +569,7 @@ var customViews = [
     }, {
         "name": "Processor Flags (Emulation)",
         "format": "nv-xdizc (e = 1)",
-        "enabled": false,
+        "enabled": true,
         "controls": [{
             "label": "Negative",
             "type": "CheckBox",
@@ -641,7 +654,7 @@ var customViews = [
             "label": "Red",
             "type": "TextBox",
             "pos": 0,
-            "size": 5,
+            "size": 5
         }, {
             "label": "Green",
             "type": "TextBox",
@@ -651,10 +664,7 @@ var customViews = [
             "label": "Blue",
             "type": "TextBox",
             "pos": 10,
-            "size": 5,
-        }
-    
-    
-    ]
-    }, 
-];
+            "size": 5
+        }]
+    }]
+}];
