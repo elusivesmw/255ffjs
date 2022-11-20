@@ -603,8 +603,11 @@ var customViews = [{
             "type": "CheckBox",
             "pos": 0
         }]
-    }, {
-        "name": "SNES Color",
+    }]
+}, {
+    "title": "Colors",
+    "formats": [{
+        "name": "15-bit Hex Color",
         "format": "xBBBGGGRRR",
         "enabled": true,
         "controls": [{
@@ -632,7 +635,12 @@ var customViews = [{
             "size": 5,
             "base": 16,
             "weight": 3
-        }, {
+        }]
+    }, {
+        "name": "15-bit Decimal Color",
+        "format": "xBBBGGGRRR",
+        "enabled": true,
+        "controls": [{
             "label": "Red",
             "type": "TextBox",
             "pos": 0,
@@ -650,7 +658,12 @@ var customViews = [{
             "pos": 10,
             "size": 5,
             "weight": 3
-        }, {
+        }]
+    }, {
+        "name": "15-bit Decimal Color (true value)",
+        "format": "xBBBGGGRRR",
+        "enabled": true,
+        "controls": [{
             "label": "Red",
             "type": "TextBox",
             "pos": 0,

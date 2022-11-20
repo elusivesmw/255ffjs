@@ -280,6 +280,10 @@ button {
     margin-bottom: 25px;
 }
 
+.col-custom-format {
+    grid-column: 1;
+}
+
 .col-custom-label {
     grid-column: 2;
 }

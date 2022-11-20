@@ -522,6 +522,11 @@ function buildCustomView(val) {
     let controls = view.controls;
 
     if (enabled) {
+        if (format) {
+            let subDiv = buildSubheading(format);
+            customView.appendChild(subDiv);    
+        }
+        
         for (let j = 0; j < controls.length; ++j) {
             let control = controls[j];
             // give id to custom view inputs
@@ -535,6 +540,14 @@ function buildCustomView(val) {
     } 
 
     updateCustom();
+}
+
+function buildSubheading(text) {
+    let  subDiv = document.createElement("div");
+    subDiv.className = "col-custom-format";
+    subDiv.innerText = text;
+
+    return subDiv;
 }
 
 function buildInput(id, control) {
