@@ -36,12 +36,12 @@ const valueSpan = document.getElementById("valueSpan");
 
 
 // mode callback function
-function updateMode(newMode) {
+function updateMode() {
     for (const radio of modeRadios) {
-        radio.checked = (radio.value == newMode);
+        radio.checked = (radio.value == calc.mode);
     }
 
-    switch(parseInt(newMode)) {
+    switch(parseInt(calc.mode)) {
         case 0xFF:
             xbaButton.disabled = true;
             disableInputs(bits16Checkboxes, true);
@@ -88,7 +88,7 @@ function updateControl(sender) {
     // by id (textboxes)
     switch (sender.id) {
         case unsignedDecTextbox.id:
-            output.value = calc.unsignedDec;
+            sender.value = calc.unsignedDec;
             break; 
         case signedDecTextbox.id:
             sender.value = calc.signedDec;
@@ -198,9 +198,7 @@ function modeChanged(event) {
     log.debug(event.target.value);
 
     let selected = event.target;
-    calc.setMode(selected.value);
-
-    updateMode(selected.value);
+    calc.setMode(selected.value, updateMode);
     updateAll(selected);
 }
 
@@ -688,5 +686,5 @@ buildCustomViewSelect();
 // set initial mode
 // later pull from settings
 var calc = new Calc();
+updateMode();
 updateAll();
-calc.setMode(MODE._8bit, updateMode);
