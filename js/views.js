@@ -659,25 +659,5 @@ var customViews = [{
             "size": 5,
             "weight": 3
         }]
-    }, {
-        "name": "15-bit Decimal Color (true value)",
-        "format": "xBBBGGGRRR",
-        "enabled": true,
-        "controls": [{
-            "label": "Red",
-            "type": "TextBox",
-            "pos": 0,
-            "size": 5
-        }, {
-            "label": "Green",
-            "type": "TextBox",
-            "pos": 5,
-            "size": 5
-        }, {
-            "label": "Blue",
-            "type": "TextBox",
-            "pos": 10,
-            "size": 5
-        }]
     }]
 }];
