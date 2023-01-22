@@ -35,4 +35,4 @@ var log = {
     }
 };
 
-log.level = LOG_LEVEL.trace;
+log.level = LOG_LEVEL.warning;
