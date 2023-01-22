@@ -2,4 +2,8 @@
 
 This project was created to help do conversitions with various formatting while working on assembly for SNES. The goal is to be easier to use than the windows calculator while serving a more specific purpose.
 
-Intentionally, this project uses no 3rd party frameworks or has any other dependencies. It is just pure Javascript, HTML, and CSS. This is mostly so that it can be saved to work offline, but I suspect I will fork this at some point to make a hosted version.
+![User Interface](img/ui.png)
+
+Intentionally, this project uses no 3rd party libraries or has any other dependencies so that it can be saved to work offline.
+
+For offline use, the `views.js` file can be modified to add more custom formats. Examples in file.
