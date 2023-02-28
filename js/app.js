@@ -62,7 +62,7 @@ function disableInputs(inputs, disabled) {
 
 // outputs callback function
 function updateAll(sender) {
-    for (output of outputs) {
+    for (const output of outputs) {
         // don't update sender to prevent infinite loop
         if (output != sender) {
             updateControl(output);
@@ -74,7 +74,7 @@ function updateAll(sender) {
 function updateCustom(sender) {
     // need to regrab these each time
     let customOutputs = document.querySelectorAll("#custom-view .output");
-    for (output of customOutputs) {
+    for (const output of customOutputs) {
         // don't update sender to prevent infinite loop
         if (output != sender) {
             updateControl(output);
@@ -587,9 +587,9 @@ function buildTextbox(id, control) {
 
 function customInputKeyDown(event) {
     log.info("custom textbox key down");
+
     let base = event.target.dataset.base;
     let num = NUM.getNumFromBase(base);
-
 
     if (isControlChar(event)) return;
 
@@ -675,9 +675,8 @@ function setLightMode() {
 function setAutoMode() {
     log.info("auto mode");
     let date = new Date();
+    // arbitrary daylight hours
     let daytime = date.getHours() >= 8 && date.getHours() < 18;
-    log.debug(date.getHours());
-
     html.className = daytime ? "light" : "dark";
 }
 
