@@ -4,6 +4,6 @@ This project was created to help do conversitions with various formatting while 
 
 ![User Interface](img/ui.png)
 
-Intentionally, this project uses no 3rd party libraries or has any other dependencies so that it can be saved to work offline.
+Intentionally, this project uses no 3rd party libraries or frameworks.
 
 For offline use, the `views.js` file can be modified to add more custom formats. Examples in file.
