@@ -107,7 +107,6 @@ class Calc {
             this.value &= ~flag;
         }
         this.value = this.mode & this.value;
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -155,7 +154,6 @@ class Calc {
     inc(callback) {
         this.value++;
         if (this.value > this.mode) this.value = 0; 
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -163,7 +161,6 @@ class Calc {
     dec(callback) {
         this.value--;
         if (this.value < 0) this.value = parseInt(this.mode); 
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -171,7 +168,6 @@ class Calc {
     onesComplement(callback) {
         let mask = parseInt(~this.value & this.mode);
         this.value = mask;
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -188,14 +184,12 @@ class Calc {
         if (this.value >= this.mode) {
             this.value -= parseInt(this.mode) + 1;
         }
-        log.debug(this.value);
 
         if (callback) callback();
     }
 
     bsr(callback) {
         this.value = this.value >> 1;
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -205,7 +199,6 @@ class Calc {
         if (this.value > this.mode) {
             this.value -= this.mode;
         }
-        log.debug(this.value);
 
         if (callback) callback();
     }
@@ -216,20 +209,18 @@ class Calc {
         if (carry == 1) {
             this.value  += Math.floor(this.mode / 2) + 1;
         }
-        log.debug(this.value);
 
         if (callback) callback();
     }
 
     xba(callback) {
         if (this.mode != MODE._16bit) {
-            log.warning("invalid mode for xba");
+            console.warn("invalid mode for xba");
             return;
         }
         let high = (0xFF00 & this.value) >> 8;
         let low = (0x00FF & this.value) << 8;
         this.value = high | low;
-        log.debug(this.value);
 
         if (callback) callback();
     }

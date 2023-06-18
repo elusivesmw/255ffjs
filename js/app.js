@@ -34,6 +34,30 @@ const autoModeLink = document.getElementById("auto-mode");
 
 const valueSpan = document.getElementById("valueSpan");
 
+/**
+ * Inserts string at index
+ * @param {*} index The index to insert a string
+ * @param {*} string The string to insert
+ * @returns The modified string
+ */
+String.prototype.insert = function (index, string) {
+    if (index > 0) {
+        return this.substring(0, index) + string + this.substring(index);
+    }
+    return string + this;
+}
+
+/**
+ * Replaces string in selected range
+ * @param {*} startIndex The start index
+ * @param {*} endIndex The end index
+ * @param {*} string The string to place between the start and end indices
+ * @returns The modified string
+ */
+String.prototype.insertSelection = function (startIndex, endIndex, string) {
+    return this.substring(0, startIndex) + string + this.substring(endIndex);
+}
+
 
 // mode callback function
 function updateMode() {
@@ -113,8 +137,6 @@ function updateControl(sender) {
 
     // custom textboxes
     if (sender.type === "text" && sender.id.startsWith("custom-input")) {
-        log.debug("change custom text");
-
         let pos = sender.dataset.pos;
         let size = sender.dataset.size;
         let base = sender.dataset.base;
@@ -128,7 +150,6 @@ function updateControl(sender) {
 
     // custom checkboxes
     if (sender.type === "checkbox" && sender.id.startsWith("custom-input")) {
-        log.debug("change custom checkbox");
         let pos = sender.dataset.pos;
         sender.checked = calc.getCustomFlags(pos, 1);
     }
@@ -194,18 +215,12 @@ autoModeLink.addEventListener("click", setAutoMode);
 
 // events
 function modeChanged(event) {
-    log.info("mode changed");
-    log.debug(event.target.value);
-
     let selected = event.target;
     calc.setMode(selected.value, updateMode);
     updateAll(selected);
 }
 
 function inputChanged(event) {
-    log.info("input changed");
-    log.debug(event.target.value);
-
     switch (event.target.id) {
         case unsignedDecTextbox.id:
             calc.setFromUnsignedDec(event.target.value);
@@ -225,14 +240,10 @@ function inputChanged(event) {
 }
 
 function bitChanged(event) {
-    log.info("bit changed");
-
     calc.setFlags(event.target.checked, event.target.value, updateAll);
 }
 
 function inputLeft(event) {
-    log.info("input left");
-
     // if value is blank, we need to set value as 0
     // if weight is set, we need to strip off potential extra bits (round down)
     if (event.target.value == "" || event.target.dataset.weight > 0) {
@@ -241,12 +252,9 @@ function inputLeft(event) {
 }
 
 function inputRightClicked(event) {
-    log.info("right clicked");
-
     // event.preventDefault();
     // let copyValue = event.target.value;
     // navigator.clipboard.writeText(copyValue);
-    // log.debug(copyValue);
 }
 
 function incClicked() {
@@ -258,37 +266,30 @@ function decClicked() {
 }
 
 function bslButtonClicked() {
-    log.info("bsl clicked");
     calc.bsl(updateAll);
 }
 
 function bsrButtonClicked() {
-    log.info("bsr clicked");
     calc.bsr(updateAll);
 }
 
 function rolButtonClicked() {
-    log.info("rol clicked");
     calc.rol(updateAll);
 }
 
 function rorButtonClicked() {
-    log.info("ror clicked");
     calc.ror(updateAll);
 }
 
 function onesCompClicked() {
-    log.info("one's complement");
     calc.onesComplement(updateAll);
 }
 
 function twosCompClicked() {
-    log.info("two's complement");
     calc.twosComplement(updateAll);
 }
 
 function xbaButtonClicked() {
-    log.info("xba clicked");
     calc.xba(updateAll);
 }
 
@@ -334,7 +335,7 @@ function isControlChar(event) {
 function invalidChar(event, num) {
     // invalid character
     if (!num.chars.test(event.key)) {
-        log.debug(event.key + " key prevented");
+        //console.log(event.key + " key prevented");
         event.preventDefault();
         return true;
     }
@@ -353,7 +354,7 @@ function valueAfterKeyPress(event) {
 function invalidFormat(event, num, newValue) {
     // invalid format
     if (!num.format.test(newValue)) {
-        log.debug(event.key + " format prevented");
+        //console.log(event.key + " format prevented");
         event.preventDefault();
         return true;
     }
@@ -365,7 +366,7 @@ function tooManyDigits(event, newValue, maxValue) {
     let maxLength = maxValue.length;
     if (newValue.substring(0,1) == "-") ++maxLength;
     if (newValue.length > maxLength) {
-        log.debug(newValue + " too many digits");
+        //console.log(newValue + " too many digits");
         event.preventDefault();
         return true;
     }
@@ -379,7 +380,7 @@ function signedOutOfRange(event, num, newValue) {
             // is negative, handle min value
             let signedMin = calc.signedMin();
             if (newValue < signedMin) {
-                log.debug(newValue + " negative signed number too low");
+                //console.log(newValue + " negative signed number too low");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMin, updateAll);
                 return true;
@@ -388,7 +389,7 @@ function signedOutOfRange(event, num, newValue) {
             // is positive, handle lower max value
             let signedMax = calc.signedMax();
             if (newValue > signedMax) {
-                log.debug(newValue + " positive signed number too high");
+                //console.log(newValue + " positive signed number too high");
                 event.preventDefault();
                 calc.setFromSignedDec(signedMax, updateAll);
                 return true;
@@ -401,7 +402,7 @@ function signedOutOfRange(event, num, newValue) {
 function valueTooHigh(event, newValue, maxValue) {
     // value too high, set to max
     if (parseInt(newValue) > parseInt(maxValue)) {
-        log.debug(newValue + " value too high");
+        //console.log(newValue + " value too high");
         event.preventDefault();
         calc.setMaxValue(updateAll);
         return true;
@@ -413,7 +414,7 @@ function customValueTooHigh(event, newValue, maxValue) {
     // value too high, set to max
     let base = event.target.dataset.base;
     if (parseInt(newValue, base) > parseInt(maxValue, base)) {
-        log.debug(newValue + " value too high");
+        //console.log(newValue + " value too high");
         event.preventDefault();
 
         let pos = event.target.dataset.pos;
@@ -456,8 +457,6 @@ function bitsMaxValue(event, base) {
 
 
 function buildCustomViewSelect() {
-    log.info("build custom view select");
-
     let select = document.createElement("select");
     select.className = "";
     let option =  document.createElement("option");
@@ -486,8 +485,6 @@ function buildCustomViewSelect() {
     }
 
     select.addEventListener("change", (event) => {
-        log.info("select option changed");
-
          // clear previous views
         customView.innerHTML = "";
         let val = event.target.value;
@@ -511,7 +508,6 @@ function getViewFromVal(val) {
 }
 
 function buildCustomView(val) {
-    log.info("build custom view");
     let view = getViewFromVal(val);
     
     let name = view.name;
@@ -560,7 +556,7 @@ function buildInput(id, control) {
             var input = buildCheckbox(id, control);
             break;
         default:
-            log.error("invalid custom control type");
+            console.error("invalid custom control type");
     }
 
     inputDiv.appendChild(input);
@@ -586,8 +582,6 @@ function buildTextbox(id, control) {
 }
 
 function customInputKeyDown(event) {
-    log.info("custom textbox key down");
-
     let base = event.target.dataset.base;
     let num = NUM.getNumFromBase(base);
 
@@ -607,8 +601,6 @@ function customInputKeyDown(event) {
 }
 
 function customInputChanged(event) {
-    log.info("custom textbox input changed");
-
     let pos = event.target.dataset.pos;
     let size = event.target.dataset.size;
     let base = event.target.dataset.base;
@@ -636,8 +628,6 @@ function buildCheckbox(id, control) {
 }
 
 function customCheckboxChanged(event) {
-    log.info("custom checkbox input changed");
-
     let val = event.target.checked ? 1 : 0;
     let pos = event.target.dataset.pos;
 
@@ -658,22 +648,18 @@ function buildLabel(id, control) {
 }
 
 function popOut() {
-    log.info("popout");
     window.open("index.html", "_blank", "popup=true,width=600,height=800");
 }
 
 function setDarkMode() {
-    log.info("dark mode");
     html.className = "dark";
 }
 
 function setLightMode() {
-    log.info("light mode");
     html.className = "light";
 }
 
 function setAutoMode() {
-    log.info("auto mode");
     let date = new Date();
     // arbitrary daylight hours
     let daytime = date.getHours() >= 8 && date.getHours() < 18;
